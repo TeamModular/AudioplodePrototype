@@ -71,8 +71,8 @@ class sound:
 	def base(self):
 		self._strm.write(self._samps)
 		
-	def high(self):
-		self._strm.write(self._sampsHigh)
+	def high(self,stream):
+		stream.write(self._sampsHigh)
 		
-	def octave(self):
-		self._strm.write(self._sampsOct)
+	def octave(self,stream):
+		stream.write(self._sampsOct)
