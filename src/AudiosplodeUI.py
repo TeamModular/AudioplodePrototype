@@ -5,13 +5,13 @@ Created on 11 Jun 2013
 '''
 import pygame
 
-class MyClass(object):
+class AudiosplodeUI:
     '''
     UI using pygame for Audiosplode
     '''
 
 
-    def __init__(self,width=640,height=480):
+    def __init__(self,audiosplode,width=640,height=480):
         '''
         setup pygame
         create the pygame window of the width and height
@@ -21,25 +21,29 @@ class MyClass(object):
         self.height=height
         self.screen = pygame.display.set_mode((width, height))
         
+        self.audiosplode=audiosplode
+        
         #TODO scootle running the window into another thread
     
-#         running=True
-#         clock = pygame.time.Clock()
-#         
-#         while running:
-#             clock.tick(10)
-#             
-#             for event in pygame.event.get(): # User did something
-#                 if event.type == pygame.QUIT: # If user clicked close
-#                     running=False # Flag that we are done so we exit this loop
-#                     
-#             screen.fill(white)
-#             
-#             
+        running=True
+        clock = pygame.time.Clock()
+         
+        while running:
+            clock.tick(10)
+             
+            for event in pygame.event.get(): # User did something
+                if event.type == pygame.QUIT: # If user clicked close
+                    running=False # Flag that we are done so we exit this loop
+                     
+            self.screen.fill((255,255,255))
+            
+            self.audiosplode.draw(self.screen,20,0,0)
+            
+             
 #             pygame.draw.line(screen,green,[0,0],[50,30],5)
-#             
+#              
 #             pygame.draw.circle(screen,blue,[60,250],40)
-#             
-#             pygame.display.flip()
+             
+            pygame.display.flip()
         
         pass
