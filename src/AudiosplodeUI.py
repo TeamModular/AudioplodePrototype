@@ -27,7 +27,7 @@ class AudiosplodeUI:
     
         running=True
         clock = pygame.time.Clock()
-         
+        #TODO learn how to use pygame proper, this is hideously inefficient
         while running:
             clock.tick(10)
              

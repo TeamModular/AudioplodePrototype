@@ -10,6 +10,7 @@ major TODO: namespaces/modules/whatever they are in python
 import pygame
 from EmptyCell import EmptyCell
 from AudiosplodeUI import AudiosplodeUI
+from BlockageCell import BlockageCell
 
 class Audiosplode():
     
@@ -26,6 +27,10 @@ class Audiosplode():
         #print(self.cells)
     
     def draw(self,screen,cellSize,offsetX,offsetY):
+        
+        #todo not render stuff that's not in view
+        #and/or proper viewports?
+        
         for col in self.cells:
             for cell in col:
                 cell.draw(screen,(cell.x)*cellSize-offsetX,(cell.y)*cellSize-offsetY,cellSize)
@@ -34,6 +39,9 @@ class Audiosplode():
 if __name__ == '__main__':
     
     a = Audiosplode()
+    
+    a.cells[3][4]=BlockageCell(3,4)
+    
     ui = AudiosplodeUI(a,1024,768)
     
 #     pygame.init()
