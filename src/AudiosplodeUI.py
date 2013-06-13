@@ -24,6 +24,18 @@ class AudiosplodeUI:
         
         self.audiosplode=audiosplode
         
+        self.scrollRight=False
+        self.scrollLeft=False
+        self.scrollUp=False
+        self.scrollDown=False
+        
+        self.pos=[0,0]
+        
+        self.scrollSpeed=100
+        
+        self.fps=10
+        self.dt = float(1)/float(self.fps)
+        
         #TODO scootle running the window into another thread
         
         #MAJOR TODO sprites!  Should make everythign faster - pygame's sprite module is promising
@@ -31,15 +43,51 @@ class AudiosplodeUI:
         clock = pygame.time.Clock()
         #TODO learn how to use pygame proper, this is hideously inefficient
         while running:
-            clock.tick(10)
+            clock.tick(self.fps)
+             
              
             for event in pygame.event.get(): # User did something
                 if event.type == pygame.QUIT: # If user clicked close
                     running=False # Flag that we are done so we exit this loop
-                     
+                elif event.type == pygame.KEYDOWN:
+                    #deal with scrolling aorund
+                    if event.key == pygame.K_w or event.key == pygame.K_UP:
+                        self.scrollUp=True
+                    if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+                        self.scrollRight=True   
+                    if event.key == pygame.K_s or event.key == pygame.K_DOWN:
+                        self.scrollDown=True
+                    if event.key == pygame.K_a or event.key == pygame.K_LEFT:
+                        self.scrollLeft=True
+                elif event.type == pygame.KEYUP:
+                    #deal with scrolling aorund
+                    if event.key == pygame.K_w or event.key == pygame.K_UP:
+                        self.scrollUp=False
+                    if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+                        self.scrollRight=False   
+                    if event.key == pygame.K_s or event.key == pygame.K_DOWN:
+                        self.scrollDown=False
+                    if event.key == pygame.K_a or event.key == pygame.K_LEFT:
+                        self.scrollLeft=False
+                
+            #TODO limits so you can't scroll off the edge
+            if self.scrollDown:
+                self.pos[1]= self.pos[1] + self.scrollSpeed*self.dt
+            if self.scrollLeft:
+                self.pos[0]= self.pos[0] - self.scrollSpeed*self.dt
+            if self.scrollRight:
+                self.pos[0]= self.pos[0] + self.scrollSpeed*self.dt
+            if self.scrollUp:#
+                self.pos[1]= self.pos[1] - self.scrollSpeed*self.dt
+            
+            self.pos[0] = max(self.pos[0],0)
+            self.pos[1] = max(self.pos[1],0)
+            
             self.screen.fill((255,255,255))
             
-            self.audiosplode.draw(self.screen,20,0,0)
+            #print self.pos
+            
+            self.audiosplode.draw(self.screen,20,self.pos[0],self.pos[1])
             
              
             pygame.display.flip()
