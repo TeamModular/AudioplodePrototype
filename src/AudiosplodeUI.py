@@ -20,11 +20,13 @@ class AudiosplodeUI:
         self.width=width
         self.height=height
         self.screen = pygame.display.set_mode((width, height))
+        pygame.display.set_caption("THE AWESOME AUDIOSPLODE")
         
         self.audiosplode=audiosplode
         
         #TODO scootle running the window into another thread
-    
+        
+        #MAJOR TODO sprites!  Should make everythign faster - pygame's sprite module is promising
         running=True
         clock = pygame.time.Clock()
         #TODO learn how to use pygame proper, this is hideously inefficient
@@ -40,10 +42,6 @@ class AudiosplodeUI:
             self.audiosplode.draw(self.screen,20,0,0)
             
              
-#             pygame.draw.line(screen,green,[0,0],[50,30],5)
-#              
-#             pygame.draw.circle(screen,blue,[60,250],40)
-             
             pygame.display.flip()
         
-        pass
+        #TODO clear up pygame?

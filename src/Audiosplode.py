@@ -11,6 +11,7 @@ major TODO: namespaces/modules/whatever they are in python
 from EmptyCell import EmptyCell
 from AudiosplodeUI import AudiosplodeUI
 from BlockageCell import BlockageCell
+import math
 
 class Audiosplode():
     
@@ -31,9 +32,16 @@ class Audiosplode():
         #todo not render stuff that's not in view
         #and/or proper viewports?
         
-        for col in self.cells:
-            for cell in col:
-                cell.draw(screen,(cell.x)*cellSize-offsetX,(cell.y)*cellSize-offsetY,cellSize)
+        startX = int(math.floor(offsetX/cellSize))
+        startY = int(math.floor(offsetY/cellSize))
+        
+        endX = int(startX + math.ceil(screen.get_width()/cellSize))+1
+        endY = int(startY + math.ceil(screen.get_height()/cellSize))+1
+        
+        for col in self.cells[startX:endX]:
+            for cell in col[startY:endY]:
+                #if cell.x<20 and cell.y<20:
+                    cell.draw(screen,(cell.x)*cellSize-offsetX,(cell.y)*cellSize-offsetY,cellSize)
     
     
 if __name__ == '__main__':
