@@ -26,6 +26,13 @@ With all that in mind,  Audiosplode will have an update method, which will take 
 This will iterate through all the cells, updating them.  This might need to provide each cell with an array of all entities that are nearby.  Thoughts on how to do this?  Just give array of all entities?
 Audiosplode will also iterate through all the entities and update them.
 
+[MH] The way I have seen it done before is you have an update(deltaTime) function which is called for all entities.
+     The reason you have a deltaTime variable is because the time delta between update() calls may change.
+     
+     Since this is a quick prototype maybe the best way of providing nearby entities is to have world object which holds
+     the list of current entities, towers and cells, which entities can then query for verious things. E.g.
+     world.get_nearby_entities(cellx, celly)?
+
 Projectiles, when they reach the end of their path, will have all the information required to inflict damage upon mobs.  Likewise so will towers, so we can skip projects in the first instance.
 
 Audiosplode will also have a draw method which interates through everything which can be drawn.
