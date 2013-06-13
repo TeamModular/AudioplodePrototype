@@ -1,0 +1,36 @@
+Main class that deals with pulling together all the game logic is Audiosplode
+
+Audiosplode contains a 2D array of Cell-dervived objects.  This is the map.  Ideally breaking this array off into another class so it can be serialised and imported/exported would be good.
+
+A Cell is a static entity that can't move.  At present the following will inherit from it:
+EmptyCell - if nothing is there, this is the cell you want.
+BlockageCell - filled in land that you can't build on nor can entities walk through
+Tower - Intended to be the base class for lots of different tower types eventually.
+
+
+Cell classes contain a draw and update method.
+
+(the above has been partially implemented in master branch)
+
+Entities are things that can move around.  Mobs and projectiles (at some point) for example.
+
+Base Entity class, like with the Cell
+
+Mob base class extends from Entity.  Pathfinding probably best integrated here, since other entities won't need the same level of pathfinding
+
+Entities also have a draw and update method, along with get position.
+
+
+
+With all that in mind,  Audiosplode will have an update method, which will take a small timestep and move everything forwards by taht time.
+This will iterate through all the cells, updating them.  This might need to provide each cell with an array of all entities that are nearby.  Thoughts on how to do this?  Just give array of all entities?
+Audiosplode will also iterate through all the entities and update them.
+
+Projectiles, when they reach the end of their path, will have all the information required to inflict damage upon mobs.  Likewise so will towers, so we can skip projects in the first instance.
+
+Audiosplode will also have a draw method which interates through everything which can be drawn.
+
+How to do sounds?  An event system where an entity/tower declares it wants a sound could work.  Or when update() is called something could be returned which can be passed over to the sound system by Audiosplode
+
+
+An Audiosplode instance is passed to AudiosplodeUI, which will call Audiosplode.update() and Audiosplode.draw() at regular intervals, with graphics and thready stuff handled by pygame as much as possible.

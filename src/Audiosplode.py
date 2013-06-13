@@ -7,7 +7,7 @@ major TODO: namespaces/modules/whatever they are in python
 
 '''
 
-import pygame
+#import pygame
 from EmptyCell import EmptyCell
 from AudiosplodeUI import AudiosplodeUI
 from BlockageCell import BlockageCell
