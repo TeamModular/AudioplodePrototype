@@ -3,8 +3,8 @@ Created on 12 Jun 2013
 
 @author: Luke
 '''
-
-class Cell:
+#oject seems to be required for python 2.  I'm not asking why
+class Cell(object):
     '''
     a base class for all cell things to extend
     '''

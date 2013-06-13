@@ -14,7 +14,7 @@ class BlockageCell(Cell):
 
 
     def __init__(self,x,y):
-        super().__init__(x,y)
+        super(BlockageCell,self).__init__(x,y)
         '''
         Constructor
         '''

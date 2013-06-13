@@ -12,7 +12,8 @@ class Tower(Cell):
     '''
 
 
-    def __init__(self):
+    def __init__(self,x,y):
+        super(Tower,self).__init__(x,y)
         '''
         Constructor
         '''
