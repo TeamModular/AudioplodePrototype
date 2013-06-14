@@ -20,3 +20,13 @@ so: downloaded http://sourceforge.net/projects/pkgconfiglite/
 stuck in the path, removed old pkg-config
 
 this gets pkg-config working.  No idea how to get pkg-config to acknowledge that glib and gthread exist
+
+need to set PKG_CONFIG_PATH for semicolon seperated list of folders with the .pc files for hte libraries pkg-config needs to find
+
+
+navigate to folder where binaries were set
+call c:\mingw64\bin\mingw32-make
+
+trying renaming libintl-8.dll back to libintl.dll - dind't work
+
+copied lib and include from proxy-libintl-dev_20090911_win64 (also from GTK website) into C:\mingw64  now compiles!!!
