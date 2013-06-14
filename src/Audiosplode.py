@@ -12,6 +12,9 @@ from EmptyCell import EmptyCell
 from AudiosplodeUI import AudiosplodeUI
 from BlockageCell import BlockageCell
 import math
+import mob as mobclass
+import sound
+import random
 
 class Audiosplode():
     
@@ -24,6 +27,13 @@ class Audiosplode():
         self.height=height
         
         self.cells =  [ [EmptyCell(x,y) for y in range(height)] for x in range(width)  ]
+        
+        cellSize=20 
+        self.mobs = [mobclass.mob([5,6],cellSize)]
+        
+        self.sound = sound.sound()
+        
+        
         
         #print(self.cells)
     
@@ -43,6 +53,20 @@ class Audiosplode():
                 #if cell.x<20 and cell.y<20:
                     cell.draw(screen,(cell.x)*cellSize-offsetX,(cell.y)*cellSize-offsetY,cellSize)
     
+        for mob in self.mobs:
+	    		mob.draw(screen)
+	    		mob.damage(5)
+	    		mob.move([1,0])
+        for mob in self.mobs[:]: # [:] creates a temporary copy 
+	    		if mob.isDead():
+	    			self.mobs.remove(mob)
+	    			self.sound.play(2)
+	    	
+        if (random.random()>0.7):
+        		x=5+int(random.random()*10)
+        		y=5+int(random.random()*10)
+        		self.mobs.append( mobclass.mob((x,y),cellSize) )
+	    			
     
 if __name__ == '__main__':
     
