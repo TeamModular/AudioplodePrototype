@@ -3,6 +3,7 @@ import numpy
 import pyaudio
 import fluidsynth
 import thread
+import ConfigParser as c
 
 class sound:
 	def __init__(self):
@@ -11,13 +12,14 @@ class sound:
 		fluidsynth soundbank
 		calls _genTunes to generate the sounds
 		"""
-		
 		pa = pyaudio.PyAudio()
 		self._strm = pa.open(format = pyaudio.paInt16,channels = 2, rate = 44100,  output = True)
 		
 		self._fl = fluidsynth.Synth()
-		# Initial silence is 1 second
-		sfid = self._fl.sfload("/usr/share/sounds/sf2/FluidR3_GM.sf2")
+		config=c.RawConfigParser()
+		config.read("../config.cfg")
+		filterbankLocation=config.get('Sound','sfLocation')
+		sfid = self._fl.sfload(filterbankLocation)
 		self._fl.program_select(0, sfid, 0, 0)
 		
 		self._genTunes()
