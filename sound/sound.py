@@ -18,7 +18,11 @@ class sound:
 		self._fl = fluidsynth.Synth()
 		config=c.RawConfigParser()
 		config.read("../config.cfg")
-		filterbankLocation=config.get('Sound','sfLocation')
+		try:
+			filterbankLocation=config.get('Sound','sfLocation')
+		except c.NoSectionError:
+			print 'ERROR: sound section not found, have you generated the config file?'
+			quit()
 		sfid = self._fl.sfload(filterbankLocation)
 		self._fl.program_select(0, sfid, 0, 0)
 		
