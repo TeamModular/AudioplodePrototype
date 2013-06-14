@@ -30,3 +30,12 @@ call c:\mingw64\bin\mingw32-make
 trying renaming libintl-8.dll back to libintl.dll - dind't work
 
 copied lib and include from proxy-libintl-dev_20090911_win64 (also from GTK website) into C:\mingw64  now compiles!!!
+
+
+
+althoguh it compiles it doesn't run
+http://www.opencsw.org/package/libintl8/
+http://www.gnu.org/software/gettext/
+
+http://ftp.gnome.org/pub/gnome/binaries/win64/dependencies/gettext-runtime_0.18.1.1-2_win64.zip
+took dll from ^ and put over top of (I prsume 32bit) versino that was with mingw32 in system32
