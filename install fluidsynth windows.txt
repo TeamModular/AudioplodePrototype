@@ -1,0 +1,22 @@
+notes on compiling fliudsynth
+
+cmake
+mingw64 also on path
+pkg-config win64 added to path
+
+GLib from GTK
+GTK+ 	2.22.1
+
+to fix pkg-config
+cd C:/MinGW/bin
+cp libintl-8.dll intl.dll
+from http://www.gaia-gis.it/spatialite-3.0.0-BETA/mingw_how_to.html
+above didn't work, but putting taht dll into path did make more progress
+
+https://groups.google.com/forum/#!msg/spatialite-users/pyKmshYwRlc/PPiJZkDAy54J
+
+
+so: downloaded http://sourceforge.net/projects/pkgconfiglite/
+stuck in the path, removed old pkg-config
+
+this gets pkg-config working.  No idea how to get pkg-config to acknowledge that glib and gthread exist
