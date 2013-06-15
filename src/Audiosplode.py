@@ -29,7 +29,7 @@ class Audiosplode():
         self.cells =  [ [EmptyCell(x,y) for y in range(height)] for x in range(width)  ]
         
         cellSize=20 
-        self.mobs = [mobclass.mob([5,6],cellSize)]
+        self.mobs = [mobclass.mob([5,6])]
         
         self.sound = sound.sound()
         
@@ -54,7 +54,7 @@ class Audiosplode():
                     cell.draw(screen,(cell.x)*cellSize-offsetX,(cell.y)*cellSize-offsetY,cellSize)
     
         for mob in self.mobs:
-	    		mob.draw(screen)
+	    		mob.draw(screen,offsetX,offsetY,cellSize)
 	    		mob.damage(5)
 	    		mob.move([1,0])
         for mob in self.mobs[:]: # [:] creates a temporary copy 
@@ -65,7 +65,7 @@ class Audiosplode():
         if (random.random()>0.7):
         		x=5+int(random.random()*10)
         		y=5+int(random.random()*10)
-        		self.mobs.append( mobclass.mob((x,y),cellSize) )
+        		self.mobs.append( mobclass.mob((x,y)) )
 	    			
     
 if __name__ == '__main__':
