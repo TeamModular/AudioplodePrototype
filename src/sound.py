@@ -23,7 +23,7 @@ class sound:
 		try:
 			filterbankLocation=config.get('Sound','sfLocation')
 		except c.NoSectionError:
-			print 'ERROR: sound section not found, have you generated the config file?'
+			print ('ERROR: sound section not found, have you generated the config file?')
 			quit()
 		sfid = self._fl.sfload(filterbankLocation)
 		self._fl.program_select(0, sfid, 0, 0)
