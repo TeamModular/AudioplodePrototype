@@ -4,14 +4,14 @@ Created on 12 Jun 2013
 @author: Luke
 '''
 
-from abc import abstractmethod
+from abc import abstractmethod, ABCMeta
 
 #oject seems to be required for python 2.  I'm not asking why
 class Cell(object):
     '''
     a base class for all cell things to extend
     '''
-
+    __metaclass__ = ABCMeta
 
     def __init__(self,x,y):
         '''
