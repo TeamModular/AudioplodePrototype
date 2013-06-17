@@ -18,6 +18,10 @@ class BlockageCell(Cell):
         '''
         Constructor
         '''
+        
+    def update(self, dt):
+        pass
+        
     def draw(self, screen, x, y, size):
         #Cell.draw(self, screen, x, y, size)
         #black rectangle

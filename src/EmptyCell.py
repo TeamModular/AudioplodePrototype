@@ -17,6 +17,9 @@ class EmptyCell(Cell):
         '''
         Constructor
         '''
+        
+    def update(self, dt):
+        pass
 
     def draw(self, screen, x, y, size):
         #Cell.draw(self, screen, x, y, size)
