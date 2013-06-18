@@ -88,7 +88,7 @@ class AudiosplodeUI:
             #print self.pos
 
             self.audiosplode.draw(self.screen,20,self.pos[0],self.pos[1])
-
+            self.audiosplode.update(self.dt)
 
             pygame.display.flip()
 
