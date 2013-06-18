@@ -13,8 +13,8 @@ class Tower(Cell):
     '''
 
 
-    def __init__(self,x,y):
-        super(Tower,self).__init__(x,y)
+    def __init__(self,x,y, world):
+        super(Tower,self).__init__(x,y, world, walkable=False)
         '''
         Constructor
         '''
