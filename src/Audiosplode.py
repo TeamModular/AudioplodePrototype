@@ -37,7 +37,9 @@ class Audiosplode():
         #print(self.cells)
 
     def draw(self,screen,cellSize,offsetX,offsetY):
-
+        '''
+        Purely graphical, this should not affect game state.
+        '''
         #todo not render stuff that's not in view
         #and/or proper viewports?
 
@@ -54,6 +56,13 @@ class Audiosplode():
 
         for mob in self.mobs:
             mob.draw(screen,offsetX,offsetY,cellSize)
+        
+
+    def update(self,dt):
+        '''
+        update game state for a period of dt seconds
+        '''
+        for mob in self.mobs:
             mob.damage(5)
             mob.move([1,0])
         for mob in self.mobs[:]: # [:] creates a temporary copy
@@ -65,7 +74,8 @@ class Audiosplode():
             x=5+int(random.random()*10)
             y=5+int(random.random()*10)
             self.mobs.append( mobclass.mob((x,y)) )
-
+        
+        
 if __name__ == '__main__':
 
     a = Audiosplode()
