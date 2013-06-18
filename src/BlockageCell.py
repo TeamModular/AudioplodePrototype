@@ -12,9 +12,8 @@ class BlockageCell(Cell):
     classdocs
     '''
 
-
-    def __init__(self,x,y):
-        super(BlockageCell,self).__init__(x,y)
+    def __init__(self,x,y, world):
+        super(BlockageCell,self).__init__(x,y, world, walkable=False, move_cost=1)
         '''
         Constructor
         '''

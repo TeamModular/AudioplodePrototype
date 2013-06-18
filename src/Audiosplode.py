@@ -26,13 +26,14 @@ class Audiosplode():
         self.width=width
         self.height=height
 
-        self.cells =  [ [EmptyCell(x,y) for y in range(height)] for x in range(width)  ]
+        
+        self.cells =  [ [EmptyCell(x,y, self) for y in range(height)] for x in range(width)  ]
          
         self.mobs = [mobclass.mob([5,6])]
 
         self.sound = sound.sound()
 
-
+        self.pathdebug = []
 
         #print(self.cells)
 
@@ -56,6 +57,11 @@ class Audiosplode():
 
         for mob in self.mobs:
             mob.draw(screen,offsetX,offsetY,cellSize)
+            
+        # hacky addition to debug and demonstrate astar algorithm (you can remove if needs be)
+        import pygame as p
+        for x, y in self.pathdebug:
+            p.draw.rect(screen, (255,0,0), p.Rect((x-0.4/2)*cellSize-offsetX,(y-0.4/2)*cellSize - offsetY,0.4*cellSize,0.4*cellSize), 0)
         
 
     def update(self,dt):
@@ -80,7 +86,10 @@ if __name__ == '__main__':
 
     a = Audiosplode()
 
-    a.cells[3][4]=BlockageCell(3,4)
+    a.cells[3][4]=BlockageCell(3,4, a)
+
+    from pathfinding.algorithms import astar
+    a.pathdebug = [node.pos for node in astar(a.cells[0][0], a.cells[4][5])]
 
     ui = AudiosplodeUI(a,1024,768)
 

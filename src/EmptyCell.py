@@ -12,8 +12,8 @@ class EmptyCell(Cell):
     classdocs
     '''
 
-    def __init__(self,x,y):
-        super(EmptyCell,self).__init__(x,y)
+    def __init__(self, x, y, world, move_cost=1):
+        super(EmptyCell,self).__init__(x,y, world, walkable=True, move_cost=move_cost)
         '''
         Constructor
         '''
