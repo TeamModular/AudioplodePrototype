@@ -4,6 +4,7 @@ Created on 11 Jun 2013
 @author: Luke
 '''
 import pygame
+import math
 
 class AudiosplodeUI:
     '''
@@ -32,6 +33,8 @@ class AudiosplodeUI:
         self.pos=[0,0]
 
         self.scrollSpeed=100
+        
+        self.cellSize=20
 
         self.fps=10
         self.dt = float(1)/float(self.fps)
@@ -44,12 +47,14 @@ class AudiosplodeUI:
         #TODO learn how to use pygame proper, this is hideously inefficient
         while running:
             clock.tick(self.fps)
-
+            
+            mouseDown=False
+            mousePos=[0,0]
 
             for event in pygame.event.get(): # User did something
                 if event.type == pygame.QUIT: # If user clicked close
                     running=False # Flag that we are done so we exit this loop
-                elif event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYDOWN:
                     #deal with scrolling aorund
                     if event.key == pygame.K_w or event.key == pygame.K_UP:
                         self.scrollUp=True
@@ -59,7 +64,7 @@ class AudiosplodeUI:
                         self.scrollDown=True
                     if event.key == pygame.K_a or event.key == pygame.K_LEFT:
                         self.scrollLeft=True
-                elif event.type == pygame.KEYUP:
+                if event.type == pygame.KEYUP:
                     #deal with scrolling aorund
                     if event.key == pygame.K_w or event.key == pygame.K_UP:
                         self.scrollUp=False
@@ -69,25 +74,39 @@ class AudiosplodeUI:
                         self.scrollDown=False
                     if event.key == pygame.K_a or event.key == pygame.K_LEFT:
                         self.scrollLeft=False
-
-            #TODO limits so you can't scroll off the edge
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouseDown=True
+                    mousePos=event.pos
+                    
+            
+            #scrolling around stuff:
             if self.scrollDown:
                 self.pos[1]= self.pos[1] + self.scrollSpeed*self.dt
             if self.scrollLeft:
                 self.pos[0]= self.pos[0] - self.scrollSpeed*self.dt
             if self.scrollRight:
                 self.pos[0]= self.pos[0] + self.scrollSpeed*self.dt
-            if self.scrollUp:#
+            if self.scrollUp:
                 self.pos[1]= self.pos[1] - self.scrollSpeed*self.dt
 
+            #some limits to stop scrolling off top left
             self.pos[0] = max(self.pos[0],0)
             self.pos[1] = max(self.pos[1],0)
+            #TODO something for bottom right too
 
+
+            #deal with mouse clicks
+            if mouseDown:
+                
+                x = int(math.floor(mousePos[0]/self.cellSize))
+                y = int(math.floor(mousePos[1]/self.cellSize))
+                print str(mousePos[0])+","+str(mousePos[1])+" -> ("+str(x)+","+str(y)+")"
+                self.audiosplode.addTower(x,y)
+
+            #blank screen before drawing
             self.screen.fill((255,255,255))
 
-            #print self.pos
-
-            self.audiosplode.draw(self.screen,20,self.pos[0],self.pos[1])
+            self.audiosplode.draw(self.screen,self.cellSize,self.pos[0],self.pos[1])
             self.audiosplode.update(self.dt)
 
             pygame.display.flip()

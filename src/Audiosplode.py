@@ -15,6 +15,7 @@ import math
 import mob as mobclass
 import sound
 import random
+from Tower import Tower
 
 class Audiosplode():
 
@@ -74,7 +75,9 @@ class Audiosplode():
             x=5+int(random.random()*10)
             y=5+int(random.random()*10)
             self.mobs.append( mobclass.mob((x,y)) )
-        
+    
+    def addTower(self,x,y):
+        self.cells[x][y] = Tower(x,y)
         
 if __name__ == '__main__':
 

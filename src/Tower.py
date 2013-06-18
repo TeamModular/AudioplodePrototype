@@ -5,6 +5,7 @@ Created on 12 Jun 2013
 '''
 
 from Cell import Cell
+import pygame
 
 class Tower(Cell):
     '''
@@ -17,3 +18,10 @@ class Tower(Cell):
         '''
         Constructor
         '''
+        
+    def draw(self, screen, x, y, size):
+        pygame.draw.rect(screen, (0,0,255), pygame.Rect(x-size/2,y-size/2,size,size), 0)
+    
+    
+    def update(self, dt):
+        pass
