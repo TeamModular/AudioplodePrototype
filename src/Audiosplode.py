@@ -27,8 +27,7 @@ class Audiosplode():
         self.height=height
         
         self.cells =  [ [EmptyCell(x,y) for y in range(height)] for x in range(width)  ]
-        
-        cellSize=20 
+         
         self.mobs = [mobclass.mob([5,6])]
         
         self.sound = sound.sound()
