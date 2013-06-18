@@ -17,4 +17,3 @@ class Tower(Cell):
         '''
         Constructor
         '''
-        
