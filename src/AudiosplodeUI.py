@@ -29,7 +29,10 @@ class AudiosplodeUI:
         self.scrollLeft=False
         self.scrollUp=False
         self.scrollDown=False
-
+        
+        #to make up for the fact taht the screen origin and mouse click origin don't appear to be exactly the same
+        self.permanentPosOffset=[-10,-10]
+        
         self.pos=[0,0]
 
         self.scrollSpeed=100
@@ -76,7 +79,7 @@ class AudiosplodeUI:
                         self.scrollLeft=False
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouseDown=True
-                    mousePos=event.pos
+                    mousePos=(event.pos[0]-self.permanentPosOffset[0] , event.pos[1]-self.permanentPosOffset[1])
                     
             
             #scrolling around stuff:
