@@ -34,7 +34,11 @@ class mob:
             self._dead=True
     
     def getCellPos(self):
-        return (int(round(self._x)),int(round(self._y)))
+        return (int(math.floor(self._x)),int(math.floor(self._y)))
+    
+    def getNextCellPos(self):
+        return self.path[0]
+    
     
     def isDead(self):
         return self._dead
@@ -63,7 +67,7 @@ class mob:
         self._x+=dx*dt
         self._y+=dy*dt
         
-        if round(self._x) == nextX and round(self._y)==nextY:
+        if math.floor(self._x) == nextX and math.floor(self._y)==nextY:
             #we are now on the next cell
             self.currentCell=self.path[0]
             self.path=self.path[1:]

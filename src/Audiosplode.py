@@ -82,6 +82,7 @@ class Audiosplode():
             #mob.move([1,0])
             if self.newTowers:
                 mobX,mobY=mob.getCellPos()
+                print(str(mobX)+","+str(mobY))
                 mob.update(dt,self.getPath(self.cells[mobX][mobY], self.sink))
             else:
                 mob.update(dt)
