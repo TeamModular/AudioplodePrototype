@@ -83,13 +83,20 @@ class Audiosplode():
             self.mobs.append( mobclass.mob((x,y)) )
     
     def addTower(self,x,y):
-        self.cells[x][y] = Tower(x,y, self)
+        if x>=0 <self.width and y>=0 < self.height:  
+            self.cells[x][y] = Tower(x,y, self)
+            
+        a.pathdebug = [node.pos for node in astar(a.cells[0][0], a.cells[30][30])]
         
 if __name__ == '__main__':
 
     a = Audiosplode()
 
     a.cells[3][4]=BlockageCell(3,4, a)
+    a.cells[4][4]=BlockageCell(4,4, a)
+    a.cells[5][4]=BlockageCell(5,4, a)
+    a.cells[6][4]=BlockageCell(6,4, a)
+    a.cells[2][4]=BlockageCell(2,4, a)
 
     from pathfinding.algorithms import astar
     a.pathdebug = [node.pos for node in astar(a.cells[0][0], a.cells[30][30])]
