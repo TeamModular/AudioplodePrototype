@@ -10,7 +10,7 @@ major TODO: namespaces/modules/whatever they are in python
 #import pygame
 
 from AudiosplodeUI import AudiosplodeUI
-from Cell import EmptyCell,BlockageCell
+from Cell import EmptyCell,BlockageCell, Sink
 import math
 import mob as mobclass
 import sound
@@ -30,11 +30,19 @@ class Audiosplode():
         
         self.cells =  [ [EmptyCell(x,y, self) for y in range(height)] for x in range(width)  ]
          
-        self.mobs = [mobclass.mob([5,6])]
+        #self.mobs = [mobclass.mob([5,6])]
+        self.mobs=[]
 
         self.sound = sound.sound()
 
         self.pathdebug = []
+        
+        #wjere te amopbs are trying to get to
+        self.sink=None
+        
+        #are there are new towers so pathfindinw will have to be redone?
+        self.newTowers=False
+        
 
         #print(self.cells)
 
@@ -70,8 +78,13 @@ class Audiosplode():
         update game state for a period of dt seconds
         '''
         for mob in self.mobs:
-            mob.damage(5)
-            mob.move([1,0])
+            #mob.damage(5)
+            #mob.move([1,0])
+            if self.newTowers:
+                mobX,mobY=mob.getCellPos()
+                mob.update(dt,self.getPath(self.cells[mobX][mobY], self.sink))
+            else:
+                mob.update(dt)
         for mob in self.mobs[:]: # [:] creates a temporary copy
             if mob.isDead():
                 self.mobs.remove(mob)
@@ -80,14 +93,33 @@ class Audiosplode():
         if (random.random()>0.7):
             x=5+int(random.random()*10)
             y=5+int(random.random()*10)
-            self.mobs.append( mobclass.mob((x,y)) )
+            self.mobs.append( mobclass.mob((x,y),self.getPath(self.cells[x][y],self.sink)) )
+        self.newTowers=False
     
     def addTower(self,x,y):
-        if x>=0 <self.width and y>=0 < self.height:  
+        
+        mobHere=False
+        
+        for mob in self.mobs:
+            mobX,mobY = mob.getCellPos()
+            if x == mobX and y == mobY:
+                mobHere=True
+        
+        if x>=0 <self.width and y>=0 < self.height and not mobHere:  
             self.cells[x][y] = Tower(x,y, self)
             
         a.pathdebug = [node.pos for node in astar(a.cells[0][0], a.cells[30][30])]
-        
+        self.newTowers=True
+    
+    #set the place th mobs want to go to
+    def setSink(self,x,y):
+        self.sink = Sink(x, y, self)
+        self.cells[x][y]=self.sink
+    
+    #does what ti says on teh ink
+    def getPath(self,fromCell,toCell):
+        return  [node.pos for node in astar(fromCell, toCell)]
+    
 if __name__ == '__main__':
 
     a = Audiosplode()
@@ -97,6 +129,8 @@ if __name__ == '__main__':
     a.cells[5][4]=BlockageCell(5,4, a)
     a.cells[6][4]=BlockageCell(6,4, a)
     a.cells[2][4]=BlockageCell(2,4, a)
+    
+    a.setSink(20,20)
 
     from pathfinding.algorithms import astar
     a.pathdebug = [node.pos for node in astar(a.cells[0][0], a.cells[30][30])]

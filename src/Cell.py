@@ -135,3 +135,36 @@ class BlockageCell(Cell):
         #Cell.draw(self, screen, x, y, size)
         #black rectangle
         pygame.draw.rect(screen, (128,128,64), pygame.Rect(x-size/2,y-size/2,size,size), 0)
+        
+class Spawn(Cell):
+    '''
+    One of potnteianly many places that the little minions can spawn
+    '''
+    def __init__(self,x,y,world):
+        super(Spawn,self).__init__(x,y,world,walkable=True,move_cost=1)
+        
+    def update(self, dt):
+        pass
+    
+    def draw(self, screen, x, y, size):
+        #green square
+        pygame.draw.rect(screen, (0,255,0), pygame.Rect(x-size/2,y-size/2,size,size), 0)
+        
+class Sink(Cell):
+    '''
+    TODO think of ao better name than sink
+    this is the place that all the mobses want to go ot
+    if they make if there hte player loses points
+    this is bad
+    
+    '''
+    
+    def __init__(self,x,y,world):
+        super(Sink,self).__init__(x,y,world,walkable=True,move_cost=1)
+        
+    def update(self, dt):
+        pass
+    
+    def draw(self, screen, x, y, size):
+        #green square
+        pygame.draw.rect(screen, (255,128,0), pygame.Rect(x-size/2,y-size/2,size,size), 0)

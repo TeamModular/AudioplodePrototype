@@ -1,14 +1,23 @@
 import pygame as p
 import sound
+import math
+
 class mob:
-    def __init__(self,position):
+    def __init__(self,position,path):
         self._x = position[0]
         self._y=position[1]
         self._colour=(255,0,255)
         self._size=(0.4,0.4)
         self._health=100
         self._dead=False
-
+        self.speed=4
+        #path to follow!  array of typles or lists, from mike's pathy stuff
+        #it's a list of tuples
+        self.path=path
+        #current cell is first element of ara
+        self.currentCell=self.path[0]
+        #path is rest of the array
+        self.path=self.path[1:]
 
 
     def draw(self,screen,offsetX,offsetY,cellSize):
@@ -23,6 +32,44 @@ class mob:
         self._health-=amount
         if self._health<0:
             self._dead=True
-
+    
+    def getCellPos(self):
+        return (int(round(self._x)),int(round(self._y)))
+    
     def isDead(self):
         return self._dead
+    
+    def update(self,dt,newPath=None):
+        #find the path
+        #move along the path
+        
+        if not newPath == None:
+            #there is a new path!
+            self.path=newPath
+        
+        nextX,nextY = self.path[0]
+        x,y = self.currentCell
+        
+        dx=(nextX-x)*self.speed
+        dy=(nextY-y)*self.speed
+        
+        if not(x==nextX or y==nextY):
+            #not travelling horizontally
+            
+            #this might be right. check tomorrow
+            dx=dx/math.sqrt(2)
+            dy=dy/math.sqrt(2)
+        
+        self._x+=dx*dt
+        self._y+=dy*dt
+        
+        if round(self._x) == nextX and round(self._y)==nextY:
+            #we are now on the next cell
+            self.currentCell=self.path[0]
+            self.path=self.path[1:]
+            
+            if len(self.path)==0:
+                #reacehed the ened!!!
+                self._dead=True
+            
+        
