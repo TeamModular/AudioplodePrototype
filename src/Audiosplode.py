@@ -8,9 +8,9 @@ major TODO: namespaces/modules/whatever they are in python
 '''
 
 #import pygame
-from EmptyCell import EmptyCell
+
 from AudiosplodeUI import AudiosplodeUI
-from BlockageCell import BlockageCell
+from Cell import EmptyCell,BlockageCell
 import math
 import mob as mobclass
 import sound

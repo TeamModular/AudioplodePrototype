@@ -6,6 +6,7 @@ Created on 12 Jun 2013
 
 from abc import abstractmethod, ABCMeta
 import pathfinding.metrics  
+import pygame
 
 #oject seems to be required for python 2.  I'm not asking why
 class Cell(object):
@@ -94,3 +95,43 @@ class Cell(object):
         '''
         update over a time of dt seconds
         '''
+        
+        
+class EmptyCell(Cell):
+    '''
+    classdocs
+    '''
+
+    def __init__(self, x, y, world, move_cost=1):
+        super(EmptyCell,self).__init__(x,y, world, walkable=True, move_cost=move_cost)
+        '''
+        Constructor
+        '''
+        
+    def update(self, dt):
+        pass
+
+    def draw(self, screen, x, y, size):
+        #Cell.draw(self, screen, x, y, size)
+        #black rectangle
+        pygame.draw.rect(screen, (0,0,0), pygame.Rect(x-size/2,y-size/2,size,size), 1)
+        
+        
+class BlockageCell(Cell):
+    '''
+    classdocs
+    '''
+
+    def __init__(self,x,y, world):
+        super(BlockageCell,self).__init__(x,y, world, walkable=False, move_cost=1)
+        '''
+        Constructor
+        '''
+        
+    def update(self, dt):
+        pass
+        
+    def draw(self, screen, x, y, size):
+        #Cell.draw(self, screen, x, y, size)
+        #black rectangle
+        pygame.draw.rect(screen, (128,128,64), pygame.Rect(x-size/2,y-size/2,size,size), 0)
