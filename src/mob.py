@@ -59,13 +59,15 @@ class mob:
                 #in the case that we are *on* the final cell, but haven't reached its centre yet, this case will apply
                 self.path=[self.getCellPos()]
         
-        nextX = self.path[0][0]+0.5
-        nextY = self.path[0][1]+0.5
+        nextX = self.path[0][0]#+0.5
+        nextY = self.path[0][1]#+0.5
         
         #TODO look into built in or good libraries for vectors for python!
         
-        pos=array([self._x,self._y])
-        nextPos=array([nextX,nextY])
+        pos=array([float(self._x),float(self._y)])
+        #copy
+        #oldPos=pos[:]
+        nextPos=array([float(nextX),float(nextY)])
         
         #vector for the direction we want to head in
         dir = nextPos - pos
@@ -86,6 +88,8 @@ class mob:
             #we are now on the next cell
             self.currentCell=self.path[0]
             self.path=self.path[1:]
+#             self._x = nextX
+#             self._y = nextY
             
             if len(self.path)==0:
                 #reacehed the ened!!!
