@@ -1,9 +1,13 @@
 import pygame as p
 import sound
 import math
+from numpy import array,linalg
 
 class mob:
     def __init__(self,position,path):
+        
+        
+        #position, (0,0) is the top left of cell[0][0], centre of cell[0][0] is (0.5,0.5)
         self._x = position[0]
         self._y=position[1]
         self._colour=(255,0,255)
@@ -49,25 +53,35 @@ class mob:
         
         if not newPath == None:
             #there is a new path!
-            self.path=newPath
+            if len(newPath) > 1:
+                self.path=newPath[1:]
+            else:
+                self.path=newPath
         
-        nextX,nextY = self.path[0]
-        x,y = self.currentCell
+        nextX = self.path[0][0]+0.5
+        nextY = self.path[0][1]+0.5
         
-        dx=(nextX-x)*self.speed
-        dy=(nextY-y)*self.speed
+        #TODO look into built in or good libraries for vectors for python!
         
-        if not(x==nextX or y==nextY):
-            #not travelling horizontally
-            
-            #this might be right. check tomorrow
-            dx=dx/math.sqrt(2)
-            dy=dy/math.sqrt(2)
+        pos=array([self._x,self._y])
+        nextPos=array([nextX,nextY])
         
-        self._x+=dx*dt
-        self._y+=dy*dt
+        #vector for the direction we want to head in
+        dir = nextPos - pos
+        #get unit vector for this
+        dir = dir/linalg.norm(dir)
         
-        if math.floor(self._x) == nextX and math.floor(self._y)==nextY:
+        #update the position
+        pos = pos + dir*self.speed*dt
+        
+        self._x,self._y = pos
+#         self._x+=dir[0]*self.speed*dt
+#         self._y+=dir[1]*self.speed*dt
+        
+        #work out how close we are to the centre of the next cell
+        
+        
+        if linalg.norm(pos - nextPos) < self.speed*dt:
             #we are now on the next cell
             self.currentCell=self.path[0]
             self.path=self.path[1:]
