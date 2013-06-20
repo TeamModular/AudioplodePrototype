@@ -41,3 +41,12 @@ How to do sounds?  An event system where an entity/tower declares it wants a sou
 
 
 An Audiosplode instance is passed to AudiosplodeUI, which will call Audiosplode.update() and Audiosplode.draw() at regular intervals, with graphics and thready stuff handled by pygame as much as possible.
+
+
+
+
+Lukse notes to self on fixing path finding:
+just go from current actual position to path[0] continually
+will need some way of working out that it's now *at* the centre of path[0]
+
+this should mean no problems when the path suddenly changes
