@@ -39,7 +39,7 @@ class AudiosplodeUI:
         
         self.cellSize=20
 
-        self.fps=10
+        self.fps=30
         self.dt = float(1)/float(self.fps)
 
         #TODO scootle running the window into another thread
