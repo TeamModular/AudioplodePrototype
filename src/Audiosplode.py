@@ -81,9 +81,13 @@ class Audiosplode():
             #mob.damage(5)
             #mob.move([1,0])
             if self.newTowers:
+                #a new tower has been placed, give the mobs new paths!!
                 mobX,mobY=mob.getCellPos()
-                print(str(mobX)+","+str(mobY))
-                mob.update(dt,self.getPath(self.cells[mobX][mobY], self.sink))
+                #print(str(mobX)+","+str(mobY))
+                newPath = self.getPath(self.cells[mobX][mobY], self.sink)
+                if len(newPath)==0:
+                    print "eep zero lenght path calculated"
+                mob.update(dt,newPath)
             else:
                 mob.update(dt)
         for mob in self.mobs[:]: # [:] creates a temporary copy
@@ -118,6 +122,7 @@ class Audiosplode():
         self.cells[x][y]=self.sink
     
     #does what ti says on teh ink
+    #NOTE this does not include the fromCell
     def getPath(self,fromCell,toCell):
         return  [node.pos for node in astar(fromCell, toCell)]
     

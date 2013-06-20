@@ -18,10 +18,10 @@ class mob:
         #path to follow!  array of typles or lists, from mike's pathy stuff
         #it's a list of tuples
         self.path=path
-        #current cell is first element of ara
-        self.currentCell=self.path[0]
+        #current cell is not the first element of the array
+        self.currentCell=self.getCellPos()
         #path is rest of the array
-        self.path=self.path[1:]
+        self.path=self.path
 
 
     def draw(self,screen,offsetX,offsetY,cellSize):
@@ -53,10 +53,11 @@ class mob:
         
         if not newPath == None:
             #there is a new path!
-            if len(newPath) > 1:
-                self.path=newPath[1:]
-            else:
+            if len(newPath) > 0:
                 self.path=newPath
+            else:
+                #in the case that we are *on* the final cell, but haven't reached its centre yet, this case will apply
+                self.path=[self.getCellPos()]
         
         nextX = self.path[0][0]+0.5
         nextY = self.path[0][1]+0.5
