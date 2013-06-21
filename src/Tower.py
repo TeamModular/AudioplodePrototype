@@ -23,5 +23,5 @@ class Tower(Cell):
         pygame.draw.rect(screen, (0,0,255), pygame.Rect(x-size/2,y-size/2,size,size), 0)
     
     
-    def update(self, dt):
+    def update(self, dt, mobs):
         pass

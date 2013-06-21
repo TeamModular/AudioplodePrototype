@@ -10,12 +10,13 @@ major TODO: namespaces/modules/whatever they are in python
 #import pygame
 
 from AudiosplodeUI import AudiosplodeUI
-from Cell import EmptyCell,BlockageCell, Sink
+from Cell import EmptyCell,BlockageCell, Sink,Spawn
 import math
 import mob as mobclass
 import sound
 import random
 from Tower import Tower
+from pathfinding.algorithms import astar
 
 class Audiosplode():
 
@@ -39,6 +40,8 @@ class Audiosplode():
         
         #wjere te amopbs are trying to get to
         self.sink=None
+        #array of Spawn cells
+        self.spawns=[]
         
         #are there are new towers so pathfindinw will have to be redone?
         self.newTowers=False
@@ -66,11 +69,6 @@ class Audiosplode():
 
         for mob in self.mobs:
             mob.draw(screen,offsetX,offsetY,cellSize)
-            
-        # hacky addition to debug and demonstrate astar algorithm (you can remove if needs be)
-        import pygame as p
-        for x, y in self.pathdebug:
-            p.draw.rect(screen, (255,0,0), p.Rect((x-0.4/2)*cellSize-offsetX,(y-0.4/2)*cellSize - offsetY,0.4*cellSize,0.4*cellSize), 0)
         
 
     def update(self,dt):
@@ -94,15 +92,16 @@ class Audiosplode():
             if mob.isDead():
                 self.mobs.remove(mob)
                 self.sound.play(2)
-
-        if (random.random()>0.7):
-            x=5+int(random.random()*10)
-            y=5+int(random.random()*10)
-            self.mobs.append( mobclass.mob((x,y),self.getPath(self.cells[x][y],self.sink)) )
+        
+        #TODO spawning scheme that makes sense.  Batches?  constant streams?  batches of constant streams?
+        for spawn in self.spawns:
+            if random.random()*dt>0.95*dt:
+                self.mobs.append( mobclass.mob((spawn.x,spawn.y),self.getPath(spawn,self.sink)) )
+                
         self.newTowers=False
     
     def addTower(self,x,y):
-        
+        #TODO check that there is a path between every source and the sink before allowing the tower.
         mobHere=False
         
         for mob in self.mobs:
@@ -113,13 +112,19 @@ class Audiosplode():
         if x>=0 <self.width and y>=0 < self.height and not mobHere:  
             self.cells[x][y] = Tower(x,y, self)
             
-        a.pathdebug = [node.pos for node in astar(a.cells[0][0], a.cells[30][30])]
         self.newTowers=True
     
     #set the place th mobs want to go to
     def setSink(self,x,y):
         self.sink = Sink(x, y, self)
         self.cells[x][y]=self.sink
+        
+    def addSpawn(self,x,y):
+        '''
+        Any number of spawns may be added, but at least one is required for a valid map
+        '''
+        self.cells[x][y]=Spawn(x, y, self)
+        self.spawns.append(self.cells[x][y])
     
     #does what ti says on teh ink
     #NOTE this does not include the fromCell
@@ -130,16 +135,16 @@ if __name__ == '__main__':
 
     a = Audiosplode()
 
-    a.cells[3][4]=BlockageCell(3,4, a)
-    a.cells[4][4]=BlockageCell(4,4, a)
-    a.cells[5][4]=BlockageCell(5,4, a)
-    a.cells[6][4]=BlockageCell(6,4, a)
-    a.cells[2][4]=BlockageCell(2,4, a)
+#     a.cells[3][4]=BlockageCell(3,4, a)
+#     a.cells[4][4]=BlockageCell(4,4, a)
+#     a.cells[5][4]=BlockageCell(5,4, a)
+#     a.cells[6][4]=BlockageCell(6,4, a)
+#     a.cells[2][4]=BlockageCell(2,4, a)
     
     a.setSink(20,20)
-
-    from pathfinding.algorithms import astar
-    a.pathdebug = [node.pos for node in astar(a.cells[0][0], a.cells[30][30])]
+    
+    a.addSpawn(5,5)
+    a.addSpawn(50,5)
 
     ui = AudiosplodeUI(a,1024,768)
 
