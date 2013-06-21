@@ -20,7 +20,7 @@ from pathfinding.algorithms import astar
 
 class Audiosplode():
 
-    def __init__(self, width=500, height=500):
+    def __init__(self, width=100, height=100):
         '''
         Create an audiosplode world
         '''
@@ -30,6 +30,12 @@ class Audiosplode():
 
         
         self.cells =  [ [EmptyCell(x,y, self) for y in range(height)] for x in range(width)  ]
+        
+        #cell [0][0] has it's top left at the (0,0) pixel
+        #the centre of this cell is (0.5,0.5)
+        #this seems a little confusing, but I think it's overall less confusing than the alternative
+        #Luke
+        
          
         #self.mobs = [mobclass.mob([5,6])]
         self.mobs=[]
@@ -45,6 +51,9 @@ class Audiosplode():
         
         #are there are new towers so pathfindinw will have to be redone?
         self.newTowers=False
+        
+        #towers seperate to cells because updating all the cells was insanely slow
+        self.towers=[]
         
 
         #print(self.cells)
@@ -96,9 +105,18 @@ class Audiosplode():
         #TODO spawning scheme that makes sense.  Batches?  constant streams?  batches of constant streams?
         for spawn in self.spawns:
             if random.random()*dt>0.95*dt:
-                self.mobs.append( mobclass.mob((spawn.x,spawn.y),self.getPath(spawn,self.sink)) )
-                
+                self.mobs.append( mobclass.mob((spawn.x+0.5,spawn.y+0.5),self.getPath(spawn,self.sink)) )
+        
+        
+        for tower in self.towers:
+            tower.update(dt,self.mobs)
+        
         self.newTowers=False
+        
+        
+#         for col in self.cells:
+#             for cell in col:
+#                 cell.update(dt,self.mobs)
     
     def addTower(self,x,y):
         #TODO check that there is a path between every source and the sink before allowing the tower.
@@ -112,7 +130,8 @@ class Audiosplode():
         if x>=0 <self.width and y>=0 < self.height and not mobHere:  
             self.cells[x][y] = Tower(x,y, self)
             
-        self.newTowers=True
+            self.newTowers=True
+            self.towers.append(self.cells[x][y])
     
     #set the place th mobs want to go to
     def setSink(self,x,y):

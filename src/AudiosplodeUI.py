@@ -31,7 +31,8 @@ class AudiosplodeUI:
         self.scrollDown=False
         
         #to make up for the fact taht the screen origin and mouse click origin don't appear to be exactly the same
-        self.permanentPosOffset=[-10,-10]
+        #this was actually me muddling up where(0,0) was
+        self.permanentPosOffset=[0,0]
         
         self.pos=[0,0]
 

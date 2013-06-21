@@ -2,6 +2,7 @@ import pygame as p
 import sound
 import math
 from numpy import array,linalg
+from pygame.math import Vector2 as Vector
 
 class mob:
     def __init__(self,position,path):
@@ -32,7 +33,8 @@ class mob:
         self._y += relativePosition[1]
 
     def damage(self,amount):
-        assert type(amount)==int
+        #assert type(amount)==int
+        #TODO ask rich why damage must be int
         self._health-=amount
         if self._health<0:
             self._dead=True
@@ -43,6 +45,8 @@ class mob:
     def getNextCellPos(self):
         return self.path[0]
     
+    def getPos(self):
+        return Vector(self._x,self._y)
     
     def isDead(self):
         return self._dead
@@ -59,8 +63,8 @@ class mob:
                 #in the case that we are *on* the final cell, but haven't reached its centre yet, this case will apply
                 self.path=[self.getCellPos()]
         
-        nextX = self.path[0][0]#+0.5
-        nextY = self.path[0][1]#+0.5
+        nextX = self.path[0][0]+0.5
+        nextY = self.path[0][1]+0.5
         
         #TODO look into built in or good libraries for vectors for python!
         

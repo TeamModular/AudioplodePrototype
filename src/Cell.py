@@ -7,6 +7,7 @@ Created on 12 Jun 2013
 from abc import abstractmethod, ABCMeta
 import pathfinding.metrics  
 import pygame
+from pygame.math import Vector2 as Vector
 
 #oject seems to be required for python 2.  I'm not asking why
 class Cell(object):
@@ -26,6 +27,8 @@ class Cell(object):
         #this info probably not needed
         self.x=x
         self.y=y
+        
+        self.posVector=Vector(x,y)
         
         self.walkable = walkable                        # for pathfinding
         self.world = world                              # for pathfinding
@@ -90,11 +93,11 @@ class Cell(object):
         crude for now, draw centred about that x and y and with a cellSize of size on a pygame.screen
         '''
         
-    @abstractmethod
-    def update(self,dt):
-        '''
-        update over a time of dt seconds
-        '''
+#     @abstractmethod
+#     def update(self,dt,mobs):
+#         '''
+#         update over a time of dt seconds
+#         '''
         
         
 class EmptyCell(Cell):
@@ -108,13 +111,13 @@ class EmptyCell(Cell):
         Constructor
         '''
         
-    def update(self, dt):
-        pass
+#     def update(self, dt, mobs):
+#         pass
 
     def draw(self, screen, x, y, size):
         #Cell.draw(self, screen, x, y, size)
         #black rectangle
-        pygame.draw.rect(screen, (0,0,0), pygame.Rect(x-size/2,y-size/2,size,size), 1)
+        pygame.draw.rect(screen, (0,0,0), pygame.Rect(x,y,size,size), 1)
         
         
 class BlockageCell(Cell):
@@ -128,13 +131,13 @@ class BlockageCell(Cell):
         Constructor
         '''
         
-    def update(self, dt):
-        pass
+#     def update(self, dt, mobs):
+#         pass
         
     def draw(self, screen, x, y, size):
         #Cell.draw(self, screen, x, y, size)
         #black rectangle
-        pygame.draw.rect(screen, (128,128,64), pygame.Rect(x-size/2,y-size/2,size,size), 0)
+        pygame.draw.rect(screen, (128,128,64), pygame.Rect(x,y,size,size), 0)
         
 class Spawn(Cell):
     '''
@@ -142,13 +145,13 @@ class Spawn(Cell):
     '''
     def __init__(self,x,y,world):
         super(Spawn,self).__init__(x,y,world,walkable=True,move_cost=1)
-        
-    def update(self, dt):
-        pass
+#         
+#     def update(self, dt, mobs):
+#         pass
     
     def draw(self, screen, x, y, size):
         #green square
-        pygame.draw.rect(screen, (0,255,0), pygame.Rect(x-size/2,y-size/2,size,size), 0)
+        pygame.draw.rect(screen, (0,255,0), pygame.Rect(x,y,size,size), 0)
         
 class Sink(Cell):
     '''
@@ -162,9 +165,9 @@ class Sink(Cell):
     def __init__(self,x,y,world):
         super(Sink,self).__init__(x,y,world,walkable=True,move_cost=1)
         
-    def update(self, dt):
-        pass
-    
+#     def update(self, dt, mobs):
+#         pass
+#     
     def draw(self, screen, x, y, size):
         #green square
-        pygame.draw.rect(screen, (255,128,0), pygame.Rect(x-size/2,y-size/2,size,size), 0)
+        pygame.draw.rect(screen, (255,128,0), pygame.Rect(x,y,size,size), 0)
