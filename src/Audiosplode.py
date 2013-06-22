@@ -64,7 +64,7 @@ class Audiosplode():
         '''
         #todo not render stuff that's not in view
         #and/or proper viewports?
-
+        screen.fill((255,255,255))
         startX = int(math.floor(offsetX/cellSize))
         startY = int(math.floor(offsetY/cellSize))
 

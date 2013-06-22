@@ -26,7 +26,10 @@ class mob:
 
 
     def draw(self,screen,offsetX,offsetY,cellSize):
-        p.draw.rect(screen, self._colour, p.Rect((self._x-self._size[0]/2)*cellSize-offsetX,(self._y-self._size[1]/2)*cellSize - offsetY,self._size[0]*cellSize,self._size[1]*cellSize), 0)
+        
+        size = [max(math.ceil(self._size[0]*cellSize),1),max(math.ceil(self._size[1]*cellSize),1)]
+        
+        p.draw.rect(screen, self._colour, p.Rect(self._x*cellSize-size[0]/2-offsetX,self._y*cellSize-size[1]/2 - offsetY,size[0],size[1]), 0)
 
     def move(self,relativePosition):
         self._x += relativePosition[0]

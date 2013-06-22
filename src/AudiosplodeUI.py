@@ -33,6 +33,17 @@ class AudiosplodeUI:
         #to make up for the fact taht the screen origin and mouse click origin don't appear to be exactly the same
         #this was actually me muddling up where(0,0) was
         
+        '''
+        
+        General layout:
+        
+        [statusbar - money, points, etc]
+        [  viewport into game]
+        
+        [  tower selection  ][minimap]
+        
+        '''
+        
         self.pos=[0,0]
 
         self.scrollSpeed=100
@@ -44,9 +55,21 @@ class AudiosplodeUI:
         
         self.mainWindowGroup = pygame.sprite.RenderUpdates()
         
-        self.mainView = Viewport(width-100, height-100, [50,50], self.audiosplode, self.cellSize, self.pos)
+        #height of the bit at the bottom
+        navBarHeight = int(round(height*0.25))
+        statusBarHeight=int(round(height*0.05))
+        miniMapWidth = int(round(navBarHeight*1.5))
         
+        self.mainView = Viewport(width, height-navBarHeight-statusBarHeight, [0,statusBarHeight], self.audiosplode, self.cellSize, self.pos)
+        
+        self.statusBar = StatusBar(width, statusBarHeight, self.audiosplode, [0,0])
+        
+        self.miniMap = Viewport(miniMapWidth,navBarHeight,[width-miniMapWidth,height-navBarHeight],self.audiosplode, 3, [0,0])
+        
+        
+        self.mainWindowGroup.add(self.statusBar)
         self.mainWindowGroup.add(self.mainView)
+        self.mainWindowGroup.add(self.miniMap)
 
         #TODO scootle running the window into another thread
 
@@ -126,7 +149,7 @@ class AudiosplodeUI:
         self.audiosplode.update(self.dt)
 # 
 #         pygame.display.flip()
-        self.mainView.update()
+        self.mainWindowGroup.update()
         
         #draw the scene
         dirty = self.mainWindowGroup.draw(self.screen)
@@ -134,7 +157,27 @@ class AudiosplodeUI:
         
         return True
         
+class StatusBar(pygame.sprite.Sprite):
+    '''
+    Bar at the top of the screen.  Shows how much money and how many lives left
+    '''
+    def __init__(self,width,height,audiosplode,screenPos):
+        pygame.sprite.Sprite.__init__(self)
         
+        self.width=width
+        self.height=height
+        
+        #image and rect required for spritey stuff
+        self.image = pygame.Surface([width, height])
+        
+        self.rect = self.image.get_rect()
+        #probably always going to be 0,0
+        self.rect.x,self.rect.y = screenPos
+        
+        
+    def update(self):
+        self.image.fill((200,200,200))
+
 class Viewport(pygame.sprite.Sprite):
     '''
     A viewport of the game world
@@ -146,6 +189,7 @@ class Viewport(pygame.sprite.Sprite):
         self.width=width
         self.height=height
         
+        #required for spritey stuff
         self.image = pygame.Surface([width, height])
         
         self.rect = self.image.get_rect()
@@ -162,7 +206,6 @@ class Viewport(pygame.sprite.Sprite):
         self.update()
         
     def update(self):
-        self.image.fill((255,255,255))
         self.audiosplode.draw(self.image,self.cellSize,self.pos[0],self.pos[1])
         pass
     

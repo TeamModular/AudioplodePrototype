@@ -123,7 +123,8 @@ class EmptyCell(Cell):
     def draw(self, screen, x, y, size):
         #Cell.draw(self, screen, x, y, size)
         #black rectangle
-        pygame.draw.rect(screen, (0,0,0), pygame.Rect(x,y,size,size), 1)
+        pass
+        #pygame.draw.rect(screen, (0,0,0), pygame.Rect(x,y,size,size), 1)
         
     def towerable(self):
         return True
