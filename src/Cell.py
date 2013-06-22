@@ -63,7 +63,7 @@ class Cell(object):
         for i in ((1,0), (-1,0), (0, 1), (0, -1), (1, 1), (-1, -1), (1, -1), (-1, 1)):
             x = self.x - i[0]
             y = self.y - i[1]
-            if x < 0 or y < 0:
+            if x < 0 or x >= len(self.world.cells) or y < 0 or y >= len(self.world.cells[0]) :
                 continue
             
             neighbor = self.world.cells[x][y]
@@ -93,6 +93,11 @@ class Cell(object):
         crude for now, draw centred about that x and y and with a cellSize of size on a pygame.screen
         '''
         
+    @abstractmethod
+    def towerable(self):
+        '''
+        Is it possible to place a tower to replace this cell?
+        '''
 #     @abstractmethod
 #     def update(self,dt,mobs):
 #         '''
@@ -119,6 +124,9 @@ class EmptyCell(Cell):
         #black rectangle
         pygame.draw.rect(screen, (0,0,0), pygame.Rect(x,y,size,size), 1)
         
+    def towerable(self):
+        return True
+        
         
 class BlockageCell(Cell):
     '''
@@ -139,6 +147,9 @@ class BlockageCell(Cell):
         #black rectangle
         pygame.draw.rect(screen, (128,128,64), pygame.Rect(x,y,size,size), 0)
         
+    def towerable(self):
+        return False
+        
 class Spawn(Cell):
     '''
     One of potnteianly many places that the little minions can spawn
@@ -152,6 +163,9 @@ class Spawn(Cell):
     def draw(self, screen, x, y, size):
         #green square
         pygame.draw.rect(screen, (0,255,0), pygame.Rect(x,y,size,size), 0)
+    
+    def towerable(self):
+        return False
         
 class Sink(Cell):
     '''
@@ -171,3 +185,6 @@ class Sink(Cell):
     def draw(self, screen, x, y, size):
         #green square
         pygame.draw.rect(screen, (255,128,0), pygame.Rect(x,y,size,size), 0)
+        
+    def towerable(self):
+        return False

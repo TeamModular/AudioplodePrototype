@@ -118,20 +118,47 @@ class Audiosplode():
 #             for cell in col:
 #                 cell.update(dt,self.mobs)
     
+    #also returns true or false for if successfully placed
     def addTower(self,x,y):
         #TODO check that there is a path between every source and the sink before allowing the tower.
-        mobHere=False
         
         for mob in self.mobs:
             mobX,mobY = mob.getCellPos()
             if x == mobX and y == mobY:
-                mobHere=True
-        
-        if x>=0 <self.width and y>=0 < self.height and not mobHere:  
+                return False
+         
+         
+                
+        #this is in the range of the board and also not ontop of a mob
+        if x>=0 <self.width and y>=0 < self.height and self.cells[x][y].towerable():#
+            
+            #test if there are still paths from the sources to the sink
+            
+            #make it not walkable for purposes of this test
+            self.cells[x][y].walkable=False
+            
+            path=True
+            
+            for spawn in self.spawns:
+                if astar(spawn, self.sink) == None:
+                    path=False
+            
+            
+            #put cell back to normal
+            self.cells[x][y].walkable=True
+            
+            if not path:
+                #was no path for at least one of the spawns
+                return False
+            
+            
             self.cells[x][y] = Tower(x,y, self)
             
             self.newTowers=True
             self.towers.append(self.cells[x][y])
+            return True
+            
+        return False
     
     #set the place th mobs want to go to
     def setSink(self,x,y):

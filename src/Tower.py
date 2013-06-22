@@ -30,6 +30,8 @@ class Tower(Cell):
     def draw(self, screen, x, y, size):
         pygame.draw.rect(screen, (0,0,255), pygame.Rect(x,y,size,size), 0)
     
+    def towerable(self):
+        return False
     
     def update(self, dt, mobs):
         for mob in mobs:
