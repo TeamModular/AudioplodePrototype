@@ -102,9 +102,9 @@ class AudiosplodeUI:
             #deal with mouse clicks
             if mouseDown:
                 
-                x = int(math.floor(mousePos[0]/self.cellSize))
-                y = int(math.floor(mousePos[1]/self.cellSize))
-                print str(mousePos[0])+","+str(mousePos[1])+" -> ("+str(x)+","+str(y)+")"
+                x = int(math.floor((mousePos[0]+self.pos[0])/self.cellSize))
+                y = int(math.floor((mousePos[1]+self.pos[1])/self.cellSize))
+                #print str(mousePos[0])+","+str(mousePos[1])+" -> ("+str(x)+","+str(y)+")"
                 self.audiosplode.addTower(x,y)
 
             #blank screen before drawing

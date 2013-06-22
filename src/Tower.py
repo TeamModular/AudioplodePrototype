@@ -22,8 +22,12 @@ class Tower(Cell):
         
         self.range=6
         self.range2 = self.range*self.range
-        #damage per seconed
-        self.dps=40
+        #damage per shot
+        self.damage=40
+        
+        self.coolDownTime=3
+        #temperature is incremented by coolDownTime every time this tower fires.  It decreases at a rate of 1 a second
+        self.temperature=0
         
         #self.pos = Vector(x,y)
         
@@ -34,10 +38,17 @@ class Tower(Cell):
         return False
     
     def update(self, dt, mobs):
-        for mob in mobs:
-            mobPos = mob.getPos()
-            if mobPos.distance_squared_to(self.posVector) < self.range2:
-                #mob inn range!!
-                #damage it
-                mob.damage(self.dps*dt)
+        
+        self.temperature=self.temperature-dt
+        
+        if self.temperature<=0:
+        #only actually check for mobs to shoot at if we can shoot
+            for mob in mobs:
+                mobPos = mob.getPos()
+                if mobPos.distance_squared_to(self.posVector) < self.range2:
+                    #mob inn range!!
+                    #damage it
+                    mob.damage(self.damage)
+                    self.temperature=self.coolDownTime
+                    return
             
