@@ -111,10 +111,13 @@ class AudiosplodeUI:
         #deal with mouse clicks
         if mouseDown:
             
-            x = int(math.floor((mousePos[0]+self.pos[0])/self.cellSize))
-            y = int(math.floor((mousePos[1]+self.pos[1])/self.cellSize))
-            #print str(mousePos[0])+","+str(mousePos[1])+" -> ("+str(x)+","+str(y)+")"
-            self.audiosplode.addTower(x,y)
+            mousePos = self.mainView.mouseOnWorld(mousePos)
+            
+            if not mousePos == None:
+                x = int(math.floor((mousePos[0]+self.pos[0])/self.cellSize))
+                y = int(math.floor((mousePos[1]+self.pos[1])/self.cellSize))
+                #print str(mousePos[0])+","+str(mousePos[1])+" -> ("+str(x)+","+str(y)+")"
+                self.audiosplode.addTower(x,y)
 
         #blank screen before drawing
 #         self.screen.fill((255,255,255))
@@ -140,10 +143,14 @@ class Viewport(pygame.sprite.Sprite):
     def __init__(self,width,height,screenPos,audiosplode,cellSize,pos):
         pygame.sprite.Sprite.__init__(self)
         
+        self.width=width
+        self.height=height
+        
         self.image = pygame.Surface([width, height])
         
         self.rect = self.image.get_rect()
         self.rect.x,self.rect.y = screenPos
+        
         
         self.cellSize=cellSize
         
@@ -161,3 +168,10 @@ class Viewport(pygame.sprite.Sprite):
     
     #given a mouse screen position, return the mouse click positioni nthe world, or return None if outside this viewprot
     def mouseOnWorld(self,mousePos):
+        
+        if self.rect.x + self.width > mousePos[0] >= self.rect.x and self.rect.y + self.height >= mousePos[1] > self.rect.y:
+            #mouse is in range of this viewport
+            return [mousePos[0]-self.rect.x, mousePos[1]-self.rect.y]
+        else:
+            return None
+            
