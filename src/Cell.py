@@ -60,6 +60,7 @@ class Cell(object):
         
         Get all the traversable neighbor nodes
         use neighbor_gen to generate nodes given positions"""
+        #TODO maybe something so that if two blocks are diagonally next to each other, you can't walk thorugh te gap?
         for i in ((1,0), (-1,0), (0, 1), (0, -1), (1, 1), (-1, -1), (1, -1), (-1, 1)):
             x = self.x - i[0]
             y = self.y - i[1]
