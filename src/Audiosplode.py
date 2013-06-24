@@ -39,7 +39,12 @@ class Audiosplode():
          
         #self.mobs = [mobclass.mob([5,6])]
         self.mobs=[]
-
+        
+        #how many mobs escaped
+        self.escaped=0
+        
+        self.money=0
+        
         self.sound = sound.sound()
 
         self.pathdebug = []
@@ -78,7 +83,13 @@ class Audiosplode():
 
         for mob in self.mobs:
             mob.draw(screen,offsetX,offsetY,cellSize)
-        
+    
+    def getMoney(self):
+        return self.money
+    
+    def getLives(self):
+        #TODO life system
+        return -self.escaped
 
     def update(self,dt):
         '''
@@ -101,6 +112,10 @@ class Audiosplode():
             if mob.isDead():
                 self.mobs.remove(mob)
                 self.sound.play(2)
+                self.money=self.money + mob.getValue()
+            if mob.hasEscaped():
+                self.mobs.remove(mob)
+                self.escaped = self.escaped + 1
         
         #TODO spawning scheme that makes sense.  Batches?  constant streams?  batches of constant streams?
         for spawn in self.spawns:

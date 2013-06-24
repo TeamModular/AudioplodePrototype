@@ -15,6 +15,8 @@ class mob:
         self._size=(0.4,0.4)
         self._health=100
         self._dead=False
+        #did we make it to the sink?
+        self._escaped=False
         self.speed=4
         #path to follow!  array of typles or lists, from mike's pathy stuff
         #it's a list of tuples
@@ -23,6 +25,9 @@ class mob:
         self.currentCell=self.getCellPos()
         #path is rest of the array
         self.path=self.path
+        #how much money does the player get for killing this
+        #TODO random bonus for some mobs?
+        self._value=1
 
 
     def draw(self,screen,offsetX,offsetY,cellSize):
@@ -53,6 +58,12 @@ class mob:
     
     def isDead(self):
         return self._dead
+    
+    def getValue(self):
+        return self._value
+    
+    def hasEscaped(self):
+        return self._escaped
     
     def update(self,dt,newPath=None):
         #find the path
@@ -100,6 +111,6 @@ class mob:
             
             if len(self.path)==0:
                 #reacehed the ened!!!
-                self._dead=True
+                self._escaped=True
             
         

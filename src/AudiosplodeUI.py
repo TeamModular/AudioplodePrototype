@@ -9,6 +9,18 @@ import math
 class AudiosplodeUI:
     '''
     UI using pygame for Audiosplode
+    
+    How this is working:
+    
+    using pygame's sprite system and a rendering group.
+    
+    the whole screen is rendered by a rendering group.
+    
+    Audiosplode itself is currently a single sprite - haven't broken the game down into indivial sprites yet
+    so think of the game as like a single updating texture
+    
+    Viewports are a view of the world - so the minimap and the main view are just different configerations of viewports
+    
     '''
 
 
@@ -30,8 +42,6 @@ class AudiosplodeUI:
         self.scrollUp=False
         self.scrollDown=False
         
-        #to make up for the fact taht the screen origin and mouse click origin don't appear to be exactly the same
-        #this was actually me muddling up where(0,0) was
         
         '''
         
@@ -66,7 +76,9 @@ class AudiosplodeUI:
         
         self.miniMap = Viewport(miniMapWidth,navBarHeight,[width-miniMapWidth,height-navBarHeight],self.audiosplode, 3, [0,0])
         
+        self.navBar = NavBar(width - miniMapWidth, navBarHeight, audiosplode, [0,height-navBarHeight])
         
+        self.mainWindowGroup.add(self.navBar)
         self.mainWindowGroup.add(self.statusBar)
         self.mainWindowGroup.add(self.mainView)
         self.mainWindowGroup.add(self.miniMap)
@@ -80,9 +92,10 @@ class AudiosplodeUI:
         while running:
             clock.tick(self.fps)
             running = self.update()
+        #if we leave the loop tidy up all the shizzle
+        pygame.quit()
             
-
-        #TODO clear up pygame?
+        
     def update(self):
         mouseDown=False
         mousePos=[0,0]
@@ -156,44 +169,69 @@ class AudiosplodeUI:
         pygame.display.update(dirty)
         
         return True
+
+class UIChunk(pygame.sprite.Sprite):
+    '''
+    base class for any part of the UI that will be a sprite that forms part of a rendering group
+    '''
+    def __init__(self,width,height,screenPos):
+        pygame.sprite.Sprite.__init__(self)
+        self.width=width
+        self.height=height
+        #image and rect are required for the sprite to be part of a group
+        self.image = pygame.Surface([width, height])
         
-class StatusBar(pygame.sprite.Sprite):
+        self.rect = self.image.get_rect()
+        self.rect.x,self.rect.y = screenPos
+        
+
+class NavBar(UIChunk):
+    '''
+    bottom chunk of screen, for choosing which towers to place, etc
+    '''
+    
+    #TODO this init is nearly identical across the three classes, abstract?
+    def __init__(self,width,height,audiosplode,screenPos):
+        UIChunk.__init__(self,width,height,screenPos)
+        
+        self.audiosplode=audiosplode
+        
+    def update(self):
+        self.image.fill((200,200,200))
+        
+        
+            
+
+class StatusBar(UIChunk):
     '''
     Bar at the top of the screen.  Shows how much money and how many lives left
     '''
     def __init__(self,width,height,audiosplode,screenPos):
-        pygame.sprite.Sprite.__init__(self)
+        UIChunk.__init__(self,width,height,screenPos)
         
-        self.width=width
-        self.height=height
-        
-        #image and rect required for spritey stuff
-        self.image = pygame.Surface([width, height])
-        
-        self.rect = self.image.get_rect()
-        #probably always going to be 0,0
-        self.rect.x,self.rect.y = screenPos
-        
+        self.audiosplode=audiosplode
         
     def update(self):
         self.image.fill((200,200,200))
+        
+        if pygame.font:
+            font = pygame.font.Font(None, self.height-2)
+            text = font.render("Money: "+str(self.audiosplode.getMoney()), 1, (10, 10, 10))
+            textpos = text.get_rect(x=0)#centerx=background.get_width()/2
+            self.image.blit(text, textpos)
+            
+            text = font.render("Lives: "+str(self.audiosplode.getLives()), 1, (10, 10, 10))
+            textpos = text.get_rect(x=self.width/2)#centerx=background.get_width()/2
+            self.image.blit(text, textpos)
+            
 
-class Viewport(pygame.sprite.Sprite):
+class Viewport(UIChunk):
     '''
     A viewport of the game world
     using this as an intermediate step to rendering everything with pygame's sprite system.
         '''
     def __init__(self,width,height,screenPos,audiosplode,cellSize,pos):
-        pygame.sprite.Sprite.__init__(self)
-        
-        self.width=width
-        self.height=height
-        
-        #required for spritey stuff
-        self.image = pygame.Surface([width, height])
-        
-        self.rect = self.image.get_rect()
-        self.rect.x,self.rect.y = screenPos
+        UIChunk.__init__(self,width,height,screenPos)
         
         
         self.cellSize=cellSize
@@ -203,6 +241,7 @@ class Viewport(pygame.sprite.Sprite):
         #position of viewport in the game world
         self.pos=pos
         
+        #render it intially
         self.update()
         
     def update(self):
