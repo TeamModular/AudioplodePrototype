@@ -5,6 +5,7 @@ Created on 11 Jun 2013
 '''
 import pygame
 import math
+from pygame.math import Vector2 as Vector
 
 class AudiosplodeUI:
     '''
@@ -42,6 +43,8 @@ class AudiosplodeUI:
         self.scrollUp=False
         self.scrollDown=False
         
+        self.rightMouseDown=False
+        
         
         '''
         
@@ -54,7 +57,7 @@ class AudiosplodeUI:
         
         '''
         
-        self.pos=[0,0]
+        self.pos=Vector([0,0])
 
         self.scrollSpeed=100
         
@@ -70,19 +73,22 @@ class AudiosplodeUI:
         statusBarHeight=int(round(height*0.05))
         miniMapWidth = int(round(navBarHeight*1.5))
         
-        self.mainView = Viewport(width, height-navBarHeight-statusBarHeight, [0,statusBarHeight], self.audiosplode, self.cellSize, self.pos)
+        self.mainView = Viewport(width, height-navBarHeight-statusBarHeight, Vector([0,statusBarHeight]), self.audiosplode, self.cellSize, self.pos)
         
-        self.statusBar = StatusBar(width, statusBarHeight, self.audiosplode, [0,0])
+        self.statusBar = StatusBar(width, statusBarHeight, self.audiosplode, Vector([0,0]))
         
-        self.miniMap = Viewport(miniMapWidth,navBarHeight,[width-miniMapWidth,height-navBarHeight],self.audiosplode, 3, [0,0])
+        self.miniMap = Viewport(miniMapWidth,navBarHeight,Vector([width-miniMapWidth,height-navBarHeight]),self.audiosplode, 3, Vector([0,0]))
         
-        self.navBar = NavBar(width - miniMapWidth, navBarHeight, audiosplode, [0,height-navBarHeight])
+        self.navBar = NavBar(width - miniMapWidth, navBarHeight, audiosplode, Vector([0,height-navBarHeight]))
         
         self.mainWindowGroup.add(self.navBar)
         self.mainWindowGroup.add(self.statusBar)
         self.mainWindowGroup.add(self.mainView)
         self.mainWindowGroup.add(self.miniMap)
-
+        
+        self.oldMousePos=Vector([0,0])
+        self.gotOldMousePos=False
+        
         #TODO scootle running the window into another thread
 
         #MAJOR TODO sprites!  Should make everythign faster - pygame's sprite module is promising
@@ -97,8 +103,9 @@ class AudiosplodeUI:
             
         
     def update(self):
-        mouseDown=False
-        mousePos=[0,0]
+        mouseLeftDown=False
+        mousePos=Vector([0,0])
+        #mouseRightDown=False
 
         for event in pygame.event.get(): # User did something
             if event.type == pygame.QUIT: # If user clicked close
@@ -124,34 +131,78 @@ class AudiosplodeUI:
                 if event.key == pygame.K_a or event.key == pygame.K_LEFT:
                     self.scrollLeft=False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                mouseDown=True
-                mousePos=event.pos
+                mousePos=Vector(event.pos)
+                if event.button == 1:
+                    #left mouse button
+                    mouseLeftDown=True
+                    
+                elif event.button == 3:
+                    self.rightMouseDown=True
+                    
+                    
+                    
+                    
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 3:
+                    self.rightMouseDown=False
+                    
+                    #right mouse button!
+#                 elif event.get_pressed()[1]:
+#                     print "right mouse button"
+                
                 
         
         #scrolling around stuff:
         if self.scrollDown:
-            self.pos[1]= self.pos[1] + self.scrollSpeed*self.dt
+            self.pos.y= self.pos.y + self.scrollSpeed*self.dt
         if self.scrollLeft:
-            self.pos[0]= self.pos[0] - self.scrollSpeed*self.dt
+            self.pos.x= self.pos.x - self.scrollSpeed*self.dt
         if self.scrollRight:
-            self.pos[0]= self.pos[0] + self.scrollSpeed*self.dt
+            self.pos.x= self.pos.x + self.scrollSpeed*self.dt
         if self.scrollUp:
-            self.pos[1]= self.pos[1] - self.scrollSpeed*self.dt
+            self.pos.y= self.pos.y - self.scrollSpeed*self.dt
 
+        
+        
+        if self.rightMouseDown:
+            
+            if self.gotOldMousePos:
+                #mouse has been down for a at least one iteration of uopdate
+                mouseDif = pygame.mouse.get_pos() - self.oldMousePos
+                
+                self.pos = self.pos + mouseDif#/self.cellSize
+                #set the mouse pos back to where it was when it first right clicked, so when it reappars it's not somewehre weird
+                pygame.mouse.set_pos(self.oldMousePos)
+            else:
+                #mouse has just been pressed
+                #make mouse invisible
+                pygame.mouse.set_visible(False)
+                self.oldMousePos = Vector(pygame.mouse.get_pos())
+                self.gotOldMousePos = True
+                
+            
+            
+            
+        else:
+            self.gotOldMousePos=False
+            pygame.mouse.set_visible(True)
+        
+        
         #some limits to stop scrolling off top left
-        self.pos[0] = max(self.pos[0],0)
-        self.pos[1] = max(self.pos[1],0)
+        self.pos.x = max(self.pos.x,0)
+        self.pos.y = max(self.pos.y,0)
         #TODO something for bottom right too
-
-
+        
+        self.mainView.setPos(self.pos)
+        
         #deal with mouse clicks
-        if mouseDown:
+        if mouseLeftDown:
             
             mousePos = self.mainView.mouseOnWorld(mousePos)
             
             if not mousePos == None:
-                x = int(math.floor((mousePos[0]+self.pos[0])/self.cellSize))
-                y = int(math.floor((mousePos[1]+self.pos[1])/self.cellSize))
+                x = int(math.floor((mousePos.x+self.pos.x)/self.cellSize))
+                y = int(math.floor((mousePos.y+self.pos.y)/self.cellSize))
                 #print str(mousePos[0])+","+str(mousePos[1])+" -> ("+str(x)+","+str(y)+")"
                 self.audiosplode.addTower(x,y)
 
@@ -182,7 +233,8 @@ class UIChunk(pygame.sprite.Sprite):
         self.image = pygame.Surface([width, height])
         
         self.rect = self.image.get_rect()
-        self.rect.x,self.rect.y = screenPos
+        self.rect.x = screenPos.x
+        self.rect.y = screenPos.y
         
 
 class NavBar(UIChunk):
@@ -239,21 +291,25 @@ class Viewport(UIChunk):
         self.audiosplode=audiosplode
         
         #position of viewport in the game world
+        #currently a reference, woops
         self.pos=pos
         
         #render it intially
         self.update()
         
     def update(self):
-        self.audiosplode.draw(self.image,self.cellSize,self.pos[0],self.pos[1])
+        self.audiosplode.draw(self.image,self.cellSize,self.pos.x,self.pos.y)
         pass
+    
+    def setPos(self,pos):
+        self.pos=pos
     
     #given a mouse screen position, return the mouse click positioni nthe world, or return None if outside this viewprot
     def mouseOnWorld(self,mousePos):
         
-        if self.rect.x + self.width > mousePos[0] >= self.rect.x and self.rect.y + self.height >= mousePos[1] > self.rect.y:
+        if self.rect.x + self.width > mousePos.x >= self.rect.x and self.rect.y + self.height >= mousePos.y > self.rect.y:
             #mouse is in range of this viewport
-            return [mousePos[0]-self.rect.x, mousePos[1]-self.rect.y]
+            return Vector([mousePos.x-self.rect.x, mousePos.y-self.rect.y])
         else:
             return None
             
