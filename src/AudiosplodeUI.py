@@ -22,6 +22,8 @@ class AudiosplodeUI:
     
     Viewports are a view of the world - so the minimap and the main view are just different configerations of viewports
     
+    Note: using pygame Vector2s for all x,y pairs
+    
     '''
 
 

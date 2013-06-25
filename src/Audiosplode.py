@@ -101,11 +101,7 @@ class Audiosplode():
             if self.newTowers:
                 #a new tower has been placed, give the mobs new paths!!
                 mobX,mobY=mob.getCellPos()
-                #print(str(mobX)+","+str(mobY))
-                newPath = self.getPath(self.cells[mobX][mobY], self.sink)
-                if len(newPath)==0:
-                    print "eep zero lenght path calculated"
-                mob.update(dt,newPath)
+                mob.update(dt,self.getPath(self.cells[mobX][mobY], self.sink))
             else:
                 mob.update(dt)
         for mob in self.mobs[:]: # [:] creates a temporary copy
@@ -114,7 +110,9 @@ class Audiosplode():
                 self.sound.play(2)
                 self.money=self.money + mob.getValue()
             if mob.hasEscaped():
-                self.mobs.remove(mob)
+                if not mob.isDead():
+                    #only remove if it hasn't *just* been removed above.  can happen otherwise!
+                    self.mobs.remove(mob)
                 self.escaped = self.escaped + 1
         
         #TODO spawning scheme that makes sense.  Batches?  constant streams?  batches of constant streams?
