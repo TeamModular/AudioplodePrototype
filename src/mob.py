@@ -1,8 +1,7 @@
 import pygame as p
 import sound
 import math
-from numpy import array,linalg
-from pygame.math import Vector2 as Vector
+from numpy import array as Vector,linalg
 
 class mob:
     def __init__(self,position,path):
@@ -54,7 +53,7 @@ class mob:
         return self.path[0]
     
     def getPos(self):
-        return Vector(self._x,self._y)
+        return Vector([self._x,self._y])
     
     def isDead(self):
         return self._dead
@@ -82,10 +81,10 @@ class mob:
         
         #TODO look into built in or good libraries for vectors for python!
         
-        pos=array([float(self._x),float(self._y)])
+        pos=Vector([float(self._x),float(self._y)])
         #copy
         #oldPos=pos[:]
-        nextPos=array([float(nextX),float(nextY)])
+        nextPos=Vector([float(nextX),float(nextY)])
         
         #vector for the direction we want to head in
         dir = nextPos - pos

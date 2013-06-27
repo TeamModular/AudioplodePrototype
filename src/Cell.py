@@ -7,7 +7,7 @@ Created on 12 Jun 2013
 from abc import abstractmethod, ABCMeta
 import pathfinding.metrics  
 import pygame
-from pygame.math import Vector2 as Vector
+from numpy import array as Vector,linalg
 
 #oject seems to be required for python 2.  I'm not asking why
 class Cell(object):
@@ -28,7 +28,7 @@ class Cell(object):
         self.x=x
         self.y=y
         
-        self.posVector=Vector(x,y)
+        self.posVector=Vector([x,y])
         
         self.walkable = walkable                        # for pathfinding
         self.world = world                              # for pathfinding

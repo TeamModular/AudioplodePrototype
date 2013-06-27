@@ -6,7 +6,7 @@ Created on 12 Jun 2013
 
 from Cell import Cell
 import pygame
-from pygame.math import Vector2 as Vector
+from numpy import array as Vector,linalg
 
 class Tower(Cell):
     '''
@@ -32,6 +32,17 @@ class Tower(Cell):
         #self.pos = Vector(x,y)
         
     def draw(self, screen, x, y, size):
+        self.drawStatic(screen, x, y, size)
+        
+    @staticmethod
+    def drawStatic(screen,x,y,size):
+        '''
+        TODO review if htis is the best way of doing this
+        
+        in order to ahve the ability to draw the tower for the UI as well as the game, a seperate static draw is required
+        
+        when/if specific stuff is required to be drawn, use argumetns with defaults?
+        '''
         pygame.draw.rect(screen, (0,0,255), pygame.Rect(x,y,size,size), 0)
     
     def towerable(self):
@@ -45,7 +56,8 @@ class Tower(Cell):
         #only actually check for mobs to shoot at if we can shoot
             for mob in mobs:
                 mobPos = mob.getPos()
-                if mobPos.distance_squared_to(self.posVector) < self.range2:
+                #if mobPos.distance_squared_to(self.posVector) < self.range2:
+                if linalg.norm(mobPos - self.posVector) < self.range:
                     #mob inn range!!
                     #damage it
                     mob.damage(self.damage)

@@ -3,9 +3,11 @@ Created on 11 Jun 2013
 
 @author: Luke
 '''
+from __future__ import print_function
 import pygame
 import math
-from pygame.math import Vector2 as Vector
+from numpy import array as Vector,linalg
+
 
 class AudiosplodeUI:
     '''
@@ -23,6 +25,13 @@ class AudiosplodeUI:
     Viewports are a view of the world - so the minimap and the main view are just different configerations of viewports
     
     Note: using pygame Vector2s for all x,y pairs
+    
+    
+    general plan for tower selection UI:
+    
+    new class which is a sprite, is given a static draw function and an int which is a position in the towers array of the main AudiosplodeUI class
+    when a mouse click occurs, all UI elememts are given this info
+    the individual icons will then have enough info to let the main class know they were clicked, and therefore highlight themslves
     
     '''
 
@@ -72,18 +81,24 @@ class AudiosplodeUI:
         
         #height of the bit at the bottom
         navBarHeight = int(round(height*0.25))
+        blurbWidth = int(round(width*0.3))
         statusBarHeight=int(round(height*0.05))
-        miniMapWidth = int(round(navBarHeight*1.5))
+        #miniMapWidth = int(round(navBarHeight*1.5))
+        miniMapWidth=blurbWidth
+        navPadding = 2
         
         self.mainView = Viewport(width, height-navBarHeight-statusBarHeight, Vector([0,statusBarHeight]), self.audiosplode, self.cellSize, self.pos)
         
         self.statusBar = StatusBar(width, statusBarHeight, self.audiosplode, Vector([0,0]))
         
-        self.miniMap = Viewport(miniMapWidth,navBarHeight,Vector([width-miniMapWidth,height-navBarHeight]),self.audiosplode, 3, Vector([0,0]))
+        self.miniMap = Viewport(miniMapWidth-navPadding*2,navBarHeight-navPadding*2,Vector([width-miniMapWidth+navPadding,height-navBarHeight+navPadding]),self.audiosplode, 3, Vector([0,0]))
         
-        self.navBar = NavBar(width - miniMapWidth, navBarHeight, audiosplode, Vector([0,height-navBarHeight]))
+        self.towerSelection = TowerSelection(width - miniMapWidth-navPadding-blurbWidth, navBarHeight-navPadding*2, audiosplode, Vector([blurbWidth+navPadding,height-navBarHeight+navPadding]))
         
-        self.mainWindowGroup.add(self.navBar)
+        self.blurb = Blurb(blurbWidth-navPadding, navBarHeight-navPadding*2, self, Vector([navPadding,height-navBarHeight+navPadding]))
+        
+        self.mainWindowGroup.add(self.blurb)
+        self.mainWindowGroup.add(self.towerSelection)
         self.mainWindowGroup.add(self.statusBar)
         self.mainWindowGroup.add(self.mainView)
         self.mainWindowGroup.add(self.miniMap)
@@ -156,31 +171,35 @@ class AudiosplodeUI:
         
         #scrolling around stuff:
         if self.scrollDown:
-            self.pos.y= self.pos.y + self.scrollSpeed*self.dt
+            self.pos[1]= self.pos[1] + self.scrollSpeed*self.dt
         if self.scrollLeft:
-            self.pos.x= self.pos.x - self.scrollSpeed*self.dt
+            self.pos[0]= self.pos[0] - self.scrollSpeed*self.dt
         if self.scrollRight:
-            self.pos.x= self.pos.x + self.scrollSpeed*self.dt
+            self.pos[0]= self.pos[0] + self.scrollSpeed*self.dt
         if self.scrollUp:
-            self.pos.y= self.pos.y - self.scrollSpeed*self.dt
+            self.pos[1]= self.pos[1] - self.scrollSpeed*self.dt
 
         
         
         if self.rightMouseDown:
             
-            if self.gotOldMousePos:
-                #mouse has been down for a at least one iteration of uopdate
-                mouseDif = pygame.mouse.get_pos() - self.oldMousePos
-                
-                self.pos = self.pos + mouseDif#/self.cellSize
-                #set the mouse pos back to where it was when it first right clicked, so when it reappars it's not somewehre weird
-                pygame.mouse.set_pos(self.oldMousePos)
-            else:
-                #mouse has just been pressed
-                #make mouse invisible
-                pygame.mouse.set_visible(False)
-                self.oldMousePos = Vector(pygame.mouse.get_pos())
-                self.gotOldMousePos = True
+            if self.mainView.mouseOnChunk(Vector(pygame.mouse.get_pos())) != None:
+                #only move hte view around if the main view was waht was right clicked on?
+                if self.gotOldMousePos:
+                    #mouse has been down for a at least one iteration of uopdate
+                    mouseDif = Vector(pygame.mouse.get_pos()) - self.oldMousePos
+                    print(mouseDif)
+                    print("oldpos="+str(self.pos))
+                    self.pos +=  mouseDif#/self.cellSize
+                    print("newpos="+str(self.pos))
+                    #set the mouse pos back to where it was when it first right clicked, so when it reappars it's not somewehre weird
+                    pygame.mouse.set_pos(self.oldMousePos)
+                else:
+                    #mouse has just been pressed
+                    #make mouse invisible
+                    pygame.mouse.set_visible(False)
+                    self.oldMousePos = Vector(pygame.mouse.get_pos())
+                    self.gotOldMousePos = True
                 
             
             
@@ -191,8 +210,8 @@ class AudiosplodeUI:
         
         
         #some limits to stop scrolling off top left
-        self.pos.x = max(self.pos.x,0)
-        self.pos.y = max(self.pos.y,0)
+        self.pos[0] = max(self.pos[0],0)
+        self.pos[1] = max(self.pos[1],0)
         #TODO something for bottom right too
         
         self.mainView.setPos(self.pos)
@@ -200,13 +219,17 @@ class AudiosplodeUI:
         #deal with mouse clicks
         if mouseLeftDown:
             
-            mousePos = self.mainView.mouseOnWorld(mousePos)
+            #get hte mouse position on the main world viewport
+            mousePosOnWorld = self.mainView.mouseOnChunk(mousePos)
             
-            if not mousePos == None:
-                x = int(math.floor((mousePos.x+self.pos.x)/self.cellSize))
-                y = int(math.floor((mousePos.y+self.pos.y)/self.cellSize))
+            if not mousePosOnWorld == None:
+                x = int(math.floor((mousePosOnWorld[0]+self.pos[0])/self.cellSize))
+                y = int(math.floor((mousePosOnWorld[1]+self.pos[1])/self.cellSize))
                 #print str(mousePos[0])+","+str(mousePos[1])+" -> ("+str(x)+","+str(y)+")"
                 self.audiosplode.addTower(x,y)
+            
+            #give the mouse click info to the other UI chunks that need it
+            self.towerSelection.mouseOnChunk(mousePos)
 
         #blank screen before drawing
 #         self.screen.fill((255,255,255))
@@ -222,6 +245,11 @@ class AudiosplodeUI:
         pygame.display.update(dirty)
         
         return True
+    
+    
+    def availableTowers(self):
+        return self.audiosplode.availableTowers()
+    
 
 class UIChunk(pygame.sprite.Sprite):
     '''
@@ -235,26 +263,76 @@ class UIChunk(pygame.sprite.Sprite):
         self.image = pygame.Surface([width, height])
         
         self.rect = self.image.get_rect()
-        self.rect.x = screenPos.x
-        self.rect.y = screenPos.y
-        
-
-class NavBar(UIChunk):
-    '''
-    bottom chunk of screen, for choosing which towers to place, etc
-    '''
+        self.rect.x,self.rect.y = screenPos
     
-    #TODO this init is nearly identical across the three classes, abstract?
-    def __init__(self,width,height,audiosplode,screenPos):
+    def mouseClickedHere(self,mousePos):
+        '''
+        this is called whenever mouseOnChunk has discovered the mouse has been pressed on this UIChunk
+        override to use
+        '''
+        pass
+    
+    #given a mouse screen position, return the mouse click positioni nthe world, or return None if outside this viewprot
+    def mouseOnChunk(self,mousePos):
+        
+        if self.rect.x + self.width > mousePos[0] >= self.rect.x and self.rect.y + self.height >= mousePos[1] > self.rect.y:
+            #mouse is in range of this viewport
+            mousePos = Vector([mousePos[0]-self.rect.x, mousePos[1]-self.rect.y])
+            self.mouseClickedHere(mousePos)
+            return mousePos
+        else:
+            return None
+
+class Blurb(UIChunk):
+    def __init__(self,width,height,audiosplodeUI,screenPos):
         UIChunk.__init__(self,width,height,screenPos)
         
-        self.audiosplode=audiosplode
+        self.audiosplodeUI=audiosplodeUI
         
     def update(self):
         self.image.fill((200,200,200))
+
+class TowerSelection(UIChunk):
+    '''
+    bottom middle chunk of screen, for choosing which towers to place, etc
+    '''
+    
+    def __init__(self,width,height,audiosplodeUI,screenPos):
+        UIChunk.__init__(self,width,height,screenPos)
         
+        self.audiosplodeUI=audiosplodeUI
+        self.iconSize=int(round(self.width*0.2))
         
-            
+        #size of grid of icons
+        self.iconsWide=3
+        #self.iconsTall=2
+        
+        self.iconsPadding=int(round(self.width*0.02))
+    
+    def mouseClickedHere(self, mousePos):
+        print ("mouse in tower seelction")
+    
+    def update(self):
+        self.image.fill((200,200,200))
+        
+#         towers = self.audiosplodeUI.availableTowers()
+#         #TODO would it make more sense to have the tower buttons as individual sprites?
+#         i=0
+#         
+#         for tower in towers:
+#             
+#             x = self.iconsPadding + (i%self.iconsWide)*self.iconSize
+#             y = self.iconsPadding + math.floor(float(i)/float(self.iconsWide))
+#             
+#             tower.drawStatic(self.image,x,y,self.iconSize)
+#             
+#             i=i+1
+
+class TowerIcon(UIChunk):
+    
+    def __init__(self,width,height,audiosplodeUI,screenPos,tower):
+        UIChunk.__init__(self,width,height,screenPos)
+        self.audiosplodeUI=audiosplodeUI
 
 class StatusBar(UIChunk):
     '''
@@ -300,18 +378,11 @@ class Viewport(UIChunk):
         self.update()
         
     def update(self):
-        self.audiosplode.draw(self.image,self.cellSize,self.pos.x,self.pos.y)
+        self.audiosplode.draw(self.image,self.cellSize,self.pos[0],self.pos[1])
         pass
     
     def setPos(self,pos):
         self.pos=pos
     
-    #given a mouse screen position, return the mouse click positioni nthe world, or return None if outside this viewprot
-    def mouseOnWorld(self,mousePos):
-        
-        if self.rect.x + self.width > mousePos.x >= self.rect.x and self.rect.y + self.height >= mousePos.y > self.rect.y:
-            #mouse is in range of this viewport
-            return Vector([mousePos.x-self.rect.x, mousePos.y-self.rect.y])
-        else:
-            return None
+    
             

@@ -73,8 +73,8 @@ class Audiosplode():
         startX = int(math.floor(offsetX/cellSize))
         startY = int(math.floor(offsetY/cellSize))
 
-        endX = int(startX + math.ceil(screen.get_width()/cellSize))+1
-        endY = int(startY + math.ceil(screen.get_height()/cellSize))+1
+        endX = int(startX + math.ceil(screen.get_width()/cellSize))+2
+        endY = int(startY + math.ceil(screen.get_height()/cellSize))+2
 
         for col in self.cells[startX:endX]:
             for cell in col[startY:endY]:
@@ -90,7 +90,14 @@ class Audiosplode():
     def getLives(self):
         #TODO life system
         return -self.escaped
-
+    
+    def availableTowers(self):
+        '''
+        return a list of towers which are avaiable to be built
+        for use just with the UI atm, might be more useful for controlling which twoers the player can use later
+        '''
+        return [Tower]
+    
     def update(self,dt):
         '''
         update game state for a period of dt seconds
