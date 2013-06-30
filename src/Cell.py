@@ -7,7 +7,7 @@ Created on 12 Jun 2013
 from abc import abstractmethod, ABCMeta
 import pathfinding.metrics  
 import pygame
-from numpy import array as Vector,linalg
+from numpy import array as Vector, linalg
 
 #oject seems to be required for python 2.  I'm not asking why
 class Cell(object):
@@ -54,22 +54,41 @@ class Cell(object):
         '''
         return self.pos == o.pos
 
+    def cell_in_range(self, x, y):
+        return not (x < 0 or x >= len(self.world.cells) or y < 0 or y >= len(self.world.cells[0]))
+
+    # Tuple structure:
+    # (x, y, (additional cells that must be walkable for this cell to be walkable)
+    _adjacents = ((1,0, ()), (-1,0, ()), (0, 1, ()), (0, -1, ()))
+    _diagonals = ((1, 1, ((1, 0), (0, 1))), (-1, -1, ((-1, 0), (0, -1))), (1, -1, ((1, 0), (0, -1))), (-1, 1, ((-1, 0), (0, 1))))
+    
+
     def get_neighbors(self):
         """
         Needed for compatibility with the python-pathfinding library.
         
         Get all the traversable neighbor nodes
         use neighbor_gen to generate nodes given positions"""
-        #TODO maybe something so that if two blocks are diagonally next to each other, you can't walk thorugh te gap?
-        for i in ((1,0), (-1,0), (0, 1), (0, -1), (1, 1), (-1, -1), (1, -1), (-1, 1)):
+
+        for i in self._adjacents + self._diagonals:
             x = self.x - i[0]
             y = self.y - i[1]
-            if x < 0 or x >= len(self.world.cells) or y < 0 or y >= len(self.world.cells[0]) :
+            additional_cells = i[2]
+            
+            if not self.cell_in_range(x, y):
                 continue
             
             neighbor = self.world.cells[x][y]
             if neighbor.walkable:
-                yield neighbor
+                walkable = True
+                for additional_cell in additional_cells:
+                    if not self.world.cells[self.x - additional_cell[0]][self.y - additional_cell[1]].walkable:
+                        walkable = False
+                        break
+                
+                if walkable:
+                    yield neighbor
+            
 
     def heuristic(self, node):
         """
