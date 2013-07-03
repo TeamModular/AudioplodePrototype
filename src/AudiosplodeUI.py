@@ -129,7 +129,8 @@ class AudiosplodeUI:
             y = self.iconsPadding + math.floor(float(i)/float(self.iconsWide)) + self.towerSelection.getScreenPos()[1]
              
             #tower.drawStatic(self.image,x,y,self.iconSize)
-            icon = TowerIcon(self.iconSize, self, Vector([x,y]), tower,self.iconsMargin,i==0)
+            #by default first tower is the selected tower
+            icon = TowerIcon(self.iconSize, self, Vector([x,y]), tower,self.iconsMargin)#,i==0)
             self.mainWindowGroup.add(icon)
             self.towerIcons.append(icon)
              
@@ -261,6 +262,7 @@ class AudiosplodeUI:
             
             #give the mouse click info to the other UI chunks that need it
             self.towerSelection.mouseOnChunk(mousePos)
+            #TODO iterate through ALL UI elemnts!
 
         #blank screen before drawing
 #         self.screen.fill((255,255,255))
@@ -390,6 +392,7 @@ class TowerIcon(UIChunk):
         
     def mouseClickedHere(self, mousePos):
         self.selected=True
+        print("tower slected")
 
 class StatusBar(UIChunk):
     '''
