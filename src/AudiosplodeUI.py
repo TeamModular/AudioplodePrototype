@@ -77,7 +77,8 @@ class AudiosplodeUI:
         self.fps=30
         self.dt = float(1)/float(self.fps)
         
-        self.mainWindowGroup = pygame.sprite.RenderUpdates()
+        #self.mainWindowGroup = pygame.sprite.RenderUpdates()
+        self.mainWindowGroup = pygame.sprite.OrderedUpdates()
         
         #height of the bit at the bottom
         navBarHeight = int(round(height*0.25))
@@ -106,6 +107,33 @@ class AudiosplodeUI:
         self.oldMousePos=Vector([0,0])
         self.gotOldMousePos=False
         
+        #place all the tower icons
+        
+        self.iconSize=int(round(self.width*0.06))
+        self.iconsPadding=int(round(self.width*0.01))
+        #size of grid of icons
+        self.iconsWide=3
+        
+        
+        self.towerIcons=[];
+        
+        towers = self.audiosplode.availableTowers()
+        i=0
+         
+        for tower in towers:
+             
+            x = self.iconsPadding + (i%self.iconsWide)*self.iconSize + self.towerSelection.getScreenPos()[0]
+            y = self.iconsPadding + math.floor(float(i)/float(self.iconsWide)) + self.towerSelection.getScreenPos()[1]
+             
+            #tower.drawStatic(self.image,x,y,self.iconSize)
+            icon = TowerIcon(self.iconSize, self.iconSize, self, Vector([x,y]), tower)
+            self.mainWindowGroup.add(icon)
+            self.towerIcons.append(icon)
+             
+            i=i+1
+        
+        
+        
         #TODO scootle running the window into another thread
 
         #MAJOR TODO sprites!  Should make everythign faster - pygame's sprite module is promising
@@ -117,7 +145,7 @@ class AudiosplodeUI:
             running = self.update()
         #if we leave the loop tidy up all the shizzle
         pygame.quit()
-            
+        
         
     def update(self):
         mouseLeftDown=False
@@ -272,6 +300,9 @@ class UIChunk(pygame.sprite.Sprite):
         '''
         pass
     
+    def getScreenPos(self):
+        return Vector([self.rect.x,self.rect.y])
+    
     #given a mouse screen position, return the mouse click positioni nthe world, or return None if outside this viewprot
     def mouseOnChunk(self,mousePos):
         
@@ -329,10 +360,19 @@ class TowerSelection(UIChunk):
 #             i=i+1
 
 class TowerIcon(UIChunk):
+    '''
+    A clickable icon to choose which tower is currently selected
+    
+    this might be abstracted further to any UI square?
+    '''
     
     def __init__(self,width,height,audiosplodeUI,screenPos,tower):
         UIChunk.__init__(self,width,height,screenPos)
         self.audiosplodeUI=audiosplodeUI
+        
+        self.tower=tower;
+        
+        self.tower.drawStatic(self.image,0,0,self.width)
 
 class StatusBar(UIChunk):
     '''
