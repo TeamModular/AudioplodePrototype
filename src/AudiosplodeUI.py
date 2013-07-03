@@ -110,7 +110,10 @@ class AudiosplodeUI:
         #place all the tower icons
         
         self.iconSize=int(round(self.width*0.06))
+        #padding is space between icons
         self.iconsPadding=int(round(self.width*0.01))
+        #margin is width of line around icon
+        self.iconsMargin=int(round(self.iconsPadding*0.5))
         #size of grid of icons
         self.iconsWide=3
         
@@ -126,7 +129,7 @@ class AudiosplodeUI:
             y = self.iconsPadding + math.floor(float(i)/float(self.iconsWide)) + self.towerSelection.getScreenPos()[1]
              
             #tower.drawStatic(self.image,x,y,self.iconSize)
-            icon = TowerIcon(self.iconSize, self.iconSize, self, Vector([x,y]), tower)
+            icon = TowerIcon(self.iconSize, self, Vector([x,y]), tower,self.iconsMargin,i==0)
             self.mainWindowGroup.add(icon)
             self.towerIcons.append(icon)
              
@@ -366,13 +369,27 @@ class TowerIcon(UIChunk):
     this might be abstracted further to any UI square?
     '''
     
-    def __init__(self,width,height,audiosplodeUI,screenPos,tower):
-        UIChunk.__init__(self,width,height,screenPos)
+    def __init__(self,size,audiosplodeUI,screenPos,tower,margin,selected=False):
+        UIChunk.__init__(self,size,size,screenPos)
         self.audiosplodeUI=audiosplodeUI
         
         self.tower=tower;
+        self.margin=margin
+        self.selected=selected
         
-        self.tower.drawStatic(self.image,0,0,self.width)
+    def update(self):
+        
+        if self.selected:
+            #highlight with yellow
+            pygame.draw.rect(self.image, (255,255,0), pygame.Rect(0,0,self.width,self.height), 0)
+        else:
+            #outline with black
+            pygame.draw.rect(self.image, (0,0,0), pygame.Rect(0,0,self.width,self.height), 0)
+        
+        self.tower.drawStatic(self.image,self.margin,self.margin,self.width-self.margin*2)
+        
+    def mouseClickedHere(self, mousePos):
+        self.selected=True
 
 class StatusBar(UIChunk):
     '''
