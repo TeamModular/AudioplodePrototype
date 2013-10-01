@@ -12,7 +12,8 @@ major TODO: namespaces/modules/whatever they are in python
 from AudiosplodeUI import AudiosplodeUI
 from Cell import EmptyCell,BlockageCell, Sink,Spawn
 import math
-import mob as mobclass
+#import mob as mobClass
+import freqMob as mobclass
 import sound
 import random
 from Tower import Tower
@@ -24,6 +25,7 @@ class Audiosplode():
         '''
         Create an audiosplode world
         '''
+
 
         self.width=width
         self.height=height
