@@ -127,7 +127,7 @@ class Audiosplode():
         #TODO spawning scheme that makes sense.  Batches?  constant streams?  batches of constant streams?
         for spawn in self.spawns:
             if random.random()>0.95:
-                mobType=0.5
+                mobType = random.random()
                 self.mobs.append( mobclass.mob( (spawn.x+0.5,spawn.y+0.5) ,self.getPath(spawn,self.sink), mobType )  )
         
         

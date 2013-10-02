@@ -10,12 +10,16 @@ class mob(mobClass.mob):
             if size<1:
                 self._size=(size,size)
                 self._health=100*size
+                self._soundValue=int(10*size) #range 1..10
             else:
                 self._size=(1.0,1.0)
                 self._health=100
+                self._soundValue=10
         else:
             self._size=(0.1,0.1)
             self._health=1
+            self._soundValue=1
+
             
     def scale(self,multiple):
         self._frequency=multiple

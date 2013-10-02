@@ -41,42 +41,51 @@ class sound:
         one private list
         """
         self._tunes=[]
-
+            
         s=[]
-        #s = numpy.append(s, self._fl.get_samples(int(44100 * 0.1)))
-        self._fl.noteon(0, 60, 120)
-        s = numpy.append(s, self._fl.get_samples(int(44100 * 0.3)))
-        self._fl.noteoff(0, 60)
-        #s = numpy.append(s, self._fl.get_samples(int(44100 * 0.1)))
-        self._tunes.append(fluidsynth.raw_audio_string(s))
+ 
+        for i in xrange(10):
+            self._fl.noteon(0, 60+7*i, 120)
+            s = numpy.append(s, self._fl.get_samples(int(44100 * 0.3)))
+            self._fl.noteoff(0, 60+7*i)
+            self._tunes.append(fluidsynth.raw_audio_string(s))
 
-        s=[]
+#        s=[]
         #s = numpy.append(s, self._fl.get_samples(int(44100 * 0.1)))
-        self._fl.noteon(0, 67, 120)
-        s = numpy.append(s, self._fl.get_samples(int(44100 * 0.3)))
-        self._fl.noteoff(0, 67)
+#        self._fl.noteon(0, 60, 120)
+#        s = numpy.append(s, self._fl.get_samples(int(44100 * 0.3)))
+#        self._fl.noteoff(0, 60)
         #s = numpy.append(s, self._fl.get_samples(int(44100 * 0.1)))
-        self._tunes.append(fluidsynth.raw_audio_string(s))
+#        self._tunes.append(fluidsynth.raw_audio_string(s))
 
-        s=[]
+        #s=[]
+        #self._fl.noteon(0, 67, 120)
+        #s = numpy.append(s, self._fl.get_samples(int(44100 * 0.3)))
+        #self._fl.noteoff(0, 67)
         #s = numpy.append(s, self._fl.get_samples(int(44100 * 0.1)))
-        self._fl.noteon(0, 76, 120)
-        s = numpy.append(s, self._fl.get_samples(int(44100 * 0.3)))
-        self._fl.noteoff(0, 76)
-        #s = numpy.append(s, self._fl.get_samples(int(44100 * 0.1)))
-        self._tunes.append(fluidsynth.raw_audio_string(s))
+        #self._tunes.append(fluidsynth.raw_audio_string(s))
 
-        s=[]
+#        s=[]
         #s = numpy.append(s, self._fl.get_samples(int(44100 * 0.1)))
-        for i in xrange(0,32,4):
-            self._fl.noteon(0, 60+i, 120)
-            s = numpy.append(s, self._fl.get_samples(int(44100 * 0.2)))
-            self._fl.noteoff(0, i)
-        for i in xrange(32,0,-4):
-            self._fl.noteon(0, 60+i, 120)
-            s = numpy.append(s, self._fl.get_samples(int(44100 * 0.2)))
-            self._fl.noteoff(0, i)
-        self._tunes.append(fluidsynth.raw_audio_string(s))
+#        self._fl.noteon(0, 76, 120)
+#        s = numpy.append(s, self._fl.get_samples(int(44100 * 0.3)))
+#        self._fl.noteoff(0, 76)
+        #s = numpy.append(s, self._fl.get_samples(int(44100 * 0.1)))
+#        self._tunes.append(fluidsynth.raw_audio_string(s))
+
+        
+
+        #s=[]
+        #s = numpy.append(s, self._fl.get_samples(int(44100 * 0.1)))
+        #for i in xrange(0,32,4):
+        #    self._fl.noteon(0, 60+i, 120)
+        #    s = numpy.append(s, self._fl.get_samples(int(44100 * 0.2)))
+        #    self._fl.noteoff(0, i)
+        #for i in xrange(32,0,-4):
+        #    self._fl.noteon(0, 60+i, 120)
+        #    s = numpy.append(s, self._fl.get_samples(int(44100 * 0.2)))
+        #    self._fl.noteoff(0, i)
+        #self._tunes.append(fluidsynth.raw_audio_string(s))
 
         return
 
