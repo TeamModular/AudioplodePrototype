@@ -116,7 +116,7 @@ class Audiosplode():
         for mob in self.mobs[:]: # [:] creates a temporary copy
             if mob.isDead():
                 self.mobs.remove(mob)
-                self.sound.play(2)
+                self.sound.play(mob.getSoundValue())
                 self.money=self.money + mob.getValue()
             if mob.hasEscaped():
                 if not mob.isDead():
@@ -126,8 +126,9 @@ class Audiosplode():
         
         #TODO spawning scheme that makes sense.  Batches?  constant streams?  batches of constant streams?
         for spawn in self.spawns:
-            if random.random()*dt>0.95*dt:
-                self.mobs.append( mobclass.mob((spawn.x+0.5,spawn.y+0.5),self.getPath(spawn,self.sink)) )
+            if random.random()>0.95:
+                mobType=0.5
+                self.mobs.append( mobclass.mob( (spawn.x+0.5,spawn.y+0.5) ,self.getPath(spawn,self.sink), mobType )  )
         
         
         for tower in self.towers:
