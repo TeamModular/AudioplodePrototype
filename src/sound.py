@@ -42,9 +42,8 @@ class sound:
         """
         self._tunes=[]
             
-        s=[]
- 
         for i in xrange(10):
+            s=[]
             self._fl.noteon(0, 60+7*i, 120)
             s = numpy.append(s, self._fl.get_samples(int(44100 * 0.3)))
             self._fl.noteoff(0, 60+7*i)
