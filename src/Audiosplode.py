@@ -62,6 +62,8 @@ class Audiosplode():
         #towers seperate to cells because updating all the cells was insanely slow
         self.towers=[]
         
+        self.shots = []
+        
 
         #print(self.cells)
 
@@ -77,14 +79,20 @@ class Audiosplode():
 
         endX = int(startX + math.ceil(screen.get_width()/cellSize))+2
         endY = int(startY + math.ceil(screen.get_height()/cellSize))+2
+        
+        worldXToScreen = lambda x: x * cellSize - offsetX
+        worldYToScreen = lambda y: y * cellSize - offsetY  
 
         for col in self.cells[startX:endX]:
             for cell in col[startY:endY]:
                 #if cell.x<20 and cell.y<20:
-                cell.draw(screen,(cell.x)*cellSize-offsetX,(cell.y)*cellSize-offsetY,cellSize)
+                cell.draw(screen,worldXToScreen(cell.x),worldYToScreen(cell.y),cellSize)
 
         for mob in self.mobs:
             mob.draw(screen,offsetX,offsetY,cellSize)
+            
+        for shot in self.shots:
+            shot.draw(screen, worldXToScreen(shot.x), worldYToScreen(shot.y), worldXToScreen(shot.endPos[0]), worldYToScreen(shot.endPos[1]))
     
     def getMoney(self):
         return self.money
@@ -130,6 +138,10 @@ class Audiosplode():
                 mobType = random.random()
                 self.mobs.append( mobclass.mob( (spawn.x+0.5,spawn.y+0.5) ,self.getPath(spawn,self.sink), mobType )  )
         
+        # Update the shot draw list
+        self.shots[:] = [shot for shot in self.shots if shot.drawTime > 0]
+        for shot in self.shots:
+            shot.drawTime -= dt
         
         for tower in self.towers:
             tower.update(dt,self.mobs)
