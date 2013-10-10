@@ -12,7 +12,8 @@ major TODO: namespaces/modules/whatever they are in python
 from AudiosplodeUI import AudiosplodeUI
 from Cell import EmptyCell,BlockageCell, Sink,Spawn
 import math
-import mob as mobclass
+#import mob as mobClass
+import freqMob as mobclass
 import sound
 import random
 from Tower import Tower
@@ -24,6 +25,7 @@ class Audiosplode():
         '''
         Create an audiosplode world
         '''
+
 
         self.width=width
         self.height=height
@@ -60,6 +62,8 @@ class Audiosplode():
         #towers seperate to cells because updating all the cells was insanely slow
         self.towers=[]
         
+        self.shots = []
+        
 
         #print(self.cells)
 
@@ -75,14 +79,20 @@ class Audiosplode():
 
         endX = int(startX + math.ceil(screen.get_width()/cellSize))+2
         endY = int(startY + math.ceil(screen.get_height()/cellSize))+2
+        
+        worldXToScreen = lambda x: x * cellSize - offsetX
+        worldYToScreen = lambda y: y * cellSize - offsetY  
 
         for col in self.cells[startX:endX]:
             for cell in col[startY:endY]:
                 #if cell.x<20 and cell.y<20:
-                cell.draw(screen,(cell.x)*cellSize-offsetX,(cell.y)*cellSize-offsetY,cellSize)
+                cell.draw(screen,worldXToScreen(cell.x),worldYToScreen(cell.y),cellSize)
 
         for mob in self.mobs:
             mob.draw(screen,offsetX,offsetY,cellSize)
+            
+        for shot in self.shots:
+            shot.draw(screen, worldXToScreen(shot.x), worldYToScreen(shot.y), worldXToScreen(shot.endPos[0]), worldYToScreen(shot.endPos[1]))
     
     def getMoney(self):
         return self.money
@@ -114,7 +124,7 @@ class Audiosplode():
         for mob in self.mobs[:]: # [:] creates a temporary copy
             if mob.isDead():
                 self.mobs.remove(mob)
-                self.sound.play(2)
+                self.sound.play(mob.getSoundValue())
                 self.money=self.money + mob.getValue()
             if mob.hasEscaped():
                 if not mob.isDead():
@@ -124,9 +134,14 @@ class Audiosplode():
         
         #TODO spawning scheme that makes sense.  Batches?  constant streams?  batches of constant streams?
         for spawn in self.spawns:
-            if random.random()*dt>0.95*dt:
-                self.mobs.append( mobclass.mob((spawn.x+0.5,spawn.y+0.5),self.getPath(spawn,self.sink)) )
+            if random.random()>0.95:
+                mobType = random.random()
+                self.mobs.append( mobclass.mob( (spawn.x+0.5,spawn.y+0.5) ,self.getPath(spawn,self.sink), mobType )  )
         
+        # Update the shot draw list
+        self.shots[:] = [shot for shot in self.shots if shot.drawTime > 0]
+        for shot in self.shots:
+            shot.drawTime -= dt
         
         for tower in self.towers:
             tower.update(dt,self.mobs)

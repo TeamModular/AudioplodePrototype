@@ -27,13 +27,14 @@ class mob:
         #how much money does the player get for killing this
         #TODO random bonus for some mobs?
         self._value=1
+        self._soundValue=2
 
 
     def draw(self,screen,offsetX,offsetY,cellSize):
         
         size = [max(math.ceil(self._size[0]*cellSize),1),max(math.ceil(self._size[1]*cellSize),1)]
         
-        p.draw.rect(screen, self._colour, p.Rect(self._x*cellSize-size[0]/2-offsetX,self._y*cellSize-size[1]/2 - offsetY,size[0],size[1]), 0)
+        p.draw.rect(screen, self._colour, p.Rect(self._x*cellSize-size[0]/2.0-offsetX,self._y*cellSize-size[1]/2.0 - offsetY,size[0],size[1]), 0)
 
     def move(self,relativePosition):
         self._x += relativePosition[0]
@@ -63,6 +64,12 @@ class mob:
     
     def hasEscaped(self):
         return self._escaped
+    
+    def getSoundValue(self):
+        return self._soundValue
+    
+    def updateSoundValue(self,newValue):
+        self._soundValue=newValue
     
     def update(self,dt,newPath=None):
         #find the path
@@ -111,5 +118,4 @@ class mob:
             if len(self.path)==0:
                 #reacehed the ened!!!
                 self._escaped=True
-            
-        
+
