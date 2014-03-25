@@ -132,17 +132,28 @@ class Audiosplode():
                     self.mobs.remove(mob)
                 self.escaped = self.escaped + 1
         
-        #TODO spawning scheme that makes sense.  Batches?  constant streams?  batches of constant streams?
+        #mobs are spawned in waves and added to self.mobs              
         for spawn in self.spawns:
-            if random.random()>0.95:
-                mobType = random.random()
-                self.mobs.append( mobclass.mob( (spawn.x+0.5,spawn.y+0.5) ,self.getPath(spawn,self.sink), mobType )  )
+            spawn.update(dt,self.mobs)     
         
         # Update the shot draw list
         self.shots[:] = [shot for shot in self.shots if shot.drawTime > 0]
         for shot in self.shots:
             shot.drawTime -= dt
         
+        """
+        bit of a hack:
+            mobs now get added in spawner, so they need a path.
+            Can't do this from mobs as they don't have access
+            to the pathfinder, so doing it here.
+            But, don't want to update all mobs positions,
+            so adding a newpath from their location to the sink,
+            progressing their movement by 0.
+        """
+        for mob in self.mobs:
+            mobX,mobY=mob.getCellPos()
+            mob.update(0,self.getPath(self.cells[mobX][mobY], self.sink))
+                
         for tower in self.towers:
             tower.update(dt,self.mobs)
         
