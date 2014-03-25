@@ -118,11 +118,11 @@ class Cell(object):
         '''
         Is it possible to place a tower to replace this cell?
         '''
-#     @abstractmethod
-#     def update(self,dt,mobs):
-#         '''
-#         update over a time of dt seconds
-#         '''
+    @abstractmethod
+    def update(self,dt,mobs):
+        '''
+        update over a time of dt seconds
+        '''
         
         
 class EmptyCell(Cell):
@@ -136,8 +136,8 @@ class EmptyCell(Cell):
         Constructor
         '''
         
-#     def update(self, dt, mobs):
-#         pass
+    def update(self, dt, mobs):
+        pass
 
     def draw(self, screen, x, y, size):
         #Cell.draw(self, screen, x, y, size)
@@ -160,8 +160,8 @@ class BlockageCell(Cell):
         Constructor
         '''
         
-#     def update(self, dt, mobs):
-#         pass
+    def update(self, dt, mobs):
+        pass
         
     def draw(self, screen, x, y, size):
         #Cell.draw(self, screen, x, y, size)
@@ -170,23 +170,47 @@ class BlockageCell(Cell):
         
     def towerable(self):
         return False
-        
+import random, freqMob as mobclass   
 class Spawn(Cell):
     '''
-    One of potnteianly many places that the little minions can spawn
+    One of potentialy many places that the little minions can spawn
     '''
     def __init__(self,x,y,world):
         super(Spawn,self).__init__(x,y,world,walkable=True,move_cost=1)
-#         
-#     def update(self, dt, mobs):
-#         pass
     
+        self._wave=[]
+        self._timeSinceLastMob=0
+        self._mobReleaseFrequency=0
+        self._generateNewWave(10,1)
+         
+    def update(self, dt, mobs):
+        if dt>0:
+            if len(self._wave)>0:
+                if self._timeSinceLastMob>self._mobReleaseFrequency:
+                    mobs.append(self._wave.pop())
+                    self._timeSinceLastMob = 0
+                else:
+                    self._timeSinceLastMob = self._timeSinceLastMob + dt
+            else:
+               if self._timeSinceLastMob>10*self._mobReleaseFrequency:
+                    self._generateNewWave(10,1)
+                    self._timeSinceLastMob=0
+               else:
+                    self._timeSinceLastMob = self._timeSinceLastMob + dt
+            
     def draw(self, screen, x, y, size):
         #green square
         pygame.draw.rect(screen, (0,255,0), pygame.Rect(x,y,size,size), 0)
     
     def towerable(self):
         return False
+    
+    def _generateNewWave(self,mobs,frequency):
+        for i in xrange(mobs):
+            mobType = random.random()
+            self._wave.append( mobclass.mob( (self.x+0.5,self.y+0.5) ,None, mobType )  )
+        
+        self._mobReleaseFrequency=frequency
         
 class Sink(Cell):
     '''
@@ -200,9 +224,9 @@ class Sink(Cell):
     def __init__(self,x,y,world):
         super(Sink,self).__init__(x,y,world,walkable=True,move_cost=1)
         
-#     def update(self, dt, mobs):
-#         pass
-#     
+    def update(self, dt, mobs):
+        pass
+     
     def draw(self, screen, x, y, size):
         #green square
         pygame.draw.rect(screen, (255,128,0), pygame.Rect(x,y,size,size), 0)

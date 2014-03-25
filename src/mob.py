@@ -74,7 +74,6 @@ class mob:
     def update(self,dt,newPath=None):
         #find the path
         #move along the path
-        
         if not newPath == None:
             #there is a new path!
             if len(newPath) > 0:
