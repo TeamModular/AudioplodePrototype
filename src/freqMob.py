@@ -25,7 +25,7 @@ class mob(mobClass.mob):
         self._frequency=multiple
         
     def update(self,dt,newPath=None):
-        mobClass.mob.update(self,dt,newPath=None)
+        mobClass.mob.update(self,dt,newPath)
         self._colour = (255*self._frequency,0,255*self._frequency)
              
     def damage(self,amount):
