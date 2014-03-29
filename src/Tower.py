@@ -30,6 +30,8 @@ class Tower(Cell):
         Constructor
         '''
         
+        self._cost=10
+        
         self.range=6.0
         self.range2 = self.range*self.range
         #damage per shot
@@ -77,6 +79,9 @@ class Tower(Cell):
     
     def towerable(self):
         return False
+    
+    def getCost(self):
+        return self._cost
     
     def update(self, dt, mobs):       
         self.temperature=self.temperature-dt

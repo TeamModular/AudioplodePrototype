@@ -45,7 +45,7 @@ class Audiosplode():
         #how many mobs escaped
         self.escaped=0
         
-        self.money=0
+        self.money=50
         
         self.sound = sound.sound()
 
@@ -96,6 +96,10 @@ class Audiosplode():
     
     def getMoney(self):
         return self.money
+    
+    def spendMoney(self,amount):
+        assert self.money>=amount
+        self.money -= amount
     
     def getLives(self):
         #TODO life system
@@ -165,7 +169,7 @@ class Audiosplode():
 #                 cell.update(dt,self.mobs)
     
     #also returns true or false for if successfully placed
-    def addTower(self,x,y):
+    def addTower(self,x,y,towerType=None):
         #TODO check that there is a path between every source and the sink before allowing the tower.
         
         for mob in self.mobs:
@@ -173,7 +177,14 @@ class Audiosplode():
             if x == mobX and y == mobY:
                 return False
          
-         
+        if towerType is None: #default tower
+            towerToAdd = Tower(x,y,self)
+        else:
+            print "New towers are not implemented"
+            quit()
+                
+        if self.getMoney() < towerToAdd.getCost():
+            return False 
                 
         #this is in the range of the board and also not ontop of a mob
         if x>=0 <self.width and y>=0 < self.height and self.cells[x][y].towerable():#
@@ -198,10 +209,13 @@ class Audiosplode():
                 return False
             
             
-            self.cells[x][y] = Tower(x,y, self)
+            self.cells[x][y] = towerToAdd
             
             self.newTowers=True
             self.towers.append(self.cells[x][y])
+            
+            self.spendMoney(towerToAdd.getCost())
+            
             return True
             
         return False
