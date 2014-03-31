@@ -265,17 +265,18 @@ class Audiosplode():
 if __name__ == '__main__':
 
     a = Audiosplode()
-
-#     a.cells[3][4]=BlockageCell(3,4, a)
-#     a.cells[4][4]=BlockageCell(4,4, a)
-#     a.cells[5][4]=BlockageCell(5,4, a)
-#     a.cells[6][4]=BlockageCell(6,4, a)
-#     a.cells[2][4]=BlockageCell(2,4, a)
-    
+   
     a.setSink(50,15,1,5)
     
-    a.addSpawn(5,5)
-    a.addSpawn(5,25)
+    a.addSpawn(5,15)
+    a.addSpawn(5,19)
+
+    for spawn in a.spawns:
+        y=spawn.pos[1]
+        for i in xrange(0,50): #TODO change to world size
+            a.cells[i][y+1] = BlockageCell(i,y+1,a)
+            a.cells[i][y-1] = BlockageCell(i,y-1,a)
+
 
     ui = AudiosplodeUI(a,1024,768)
 
