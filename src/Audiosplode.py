@@ -247,16 +247,16 @@ class Audiosplode():
         """
         Added support for multiple sinks
         """
-        
         distances={node: math.hypot(node.pos[0]-fromCell.pos[0],node.pos[1]-fromCell.pos[1]) for node in self.sink} 
         
         sorted_distances = sorted(distances.iteritems(), key=operator.itemgetter(1)) 
                         
         for i in xrange(len(self.sink)):
             toCell=sorted_distances[0][0]
-            path=[node.pos for node in astar(fromCell, toCell)]    
-                        
-            if path is not None:
+            
+            nodes=astar(fromCell, toCell)
+            if nodes is not None:
+                path=[node.pos for node in nodes]
                 return path
         
         return None #no path to sink
