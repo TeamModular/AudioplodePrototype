@@ -18,6 +18,7 @@ import sound
 import random
 from Tower import Tower
 from pathfinding.algorithms import astar
+import operator
 
 class Audiosplode():
 
@@ -122,7 +123,7 @@ class Audiosplode():
             if self.newTowers:
                 #a new tower has been placed, give the mobs new paths!!
                 mobX,mobY=mob.getCellPos()
-                mob.update(dt,self.getPath(self.cells[mobX][mobY], self.sink))
+                mob.update(dt,self.getPathToSink(self.cells[mobX][mobY]))
             else:
                 mob.update(dt)
         for mob in self.mobs[:]: # [:] creates a temporary copy
@@ -156,7 +157,7 @@ class Audiosplode():
         """
         for mob in self.mobs:
             mobX,mobY=mob.getCellPos()
-            mob.update(0,self.getPath(self.cells[mobX][mobY], self.sink))
+            mob.update(0,self.getPathToSink(self.cells[mobX][mobY]))
                 
         for tower in self.towers:
             tower.update(dt,self.mobs)
@@ -197,7 +198,7 @@ class Audiosplode():
             path=True
             
             for spawn in self.spawns:
-                if astar(spawn, self.sink) == None:
+                if self.getPathToSink(spawn) == None:
                     path=False
             
             
@@ -221,10 +222,15 @@ class Audiosplode():
         return False
     
     #set the place th mobs want to go to
-    def setSink(self,x,y):
-        self.sink = Sink(x, y, self)
-        self.cells[x][y]=self.sink
+    def setSink(self,x,y,localWidth,localHeight):
+        self.sink = []
+        for j in range(localHeight):
+            for i in range(localWidth):
+                localSink = Sink(x+i,y+j, self) 
+                self.cells[x+i][y+j] = localSink
+                self.sink.append(localSink)
         
+                
     def addSpawn(self,x,y):
         '''
         Any number of spawns may be added, but at least one is required for a valid map
@@ -237,6 +243,25 @@ class Audiosplode():
     def getPath(self,fromCell,toCell):
         return  [node.pos for node in astar(fromCell, toCell)]
     
+    def getPathToSink(self,fromCell):
+        """
+        Added support for multiple sinks
+        """
+        
+        distances={node: math.hypot(node.pos[0]-fromCell.pos[0],node.pos[1]-fromCell.pos[1]) for node in self.sink} 
+        
+        sorted_distances = sorted(distances.iteritems(), key=operator.itemgetter(1)) 
+                        
+        for i in xrange(len(self.sink)):
+            toCell=sorted_distances[0][0]
+            path=[node.pos for node in astar(fromCell, toCell)]    
+                        
+            if path is not None:
+                return path
+        
+        return None #no path to sink
+            
+    
 if __name__ == '__main__':
 
     a = Audiosplode()
@@ -247,10 +272,10 @@ if __name__ == '__main__':
 #     a.cells[6][4]=BlockageCell(6,4, a)
 #     a.cells[2][4]=BlockageCell(2,4, a)
     
-    a.setSink(20,20)
+    a.setSink(50,15,1,5)
     
     a.addSpawn(5,5)
-    a.addSpawn(50,5)
+    a.addSpawn(5,25)
 
     ui = AudiosplodeUI(a,1024,768)
 
