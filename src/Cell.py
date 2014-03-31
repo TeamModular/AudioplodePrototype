@@ -181,7 +181,8 @@ class Spawn(Cell):
         self._wave=[]
         self._timeSinceLastMob=0
         self._mobReleaseFrequency=0
-        self._generateNewWave(10,1)
+        self._waveReleaseFrequency=10
+        self._generateNewWave(8,2)
          
     def update(self, dt, mobs):
         if dt>0:
@@ -192,8 +193,8 @@ class Spawn(Cell):
                 else:
                     self._timeSinceLastMob = self._timeSinceLastMob + dt
             else:
-               if self._timeSinceLastMob>10*self._mobReleaseFrequency:
-                    self._generateNewWave(10,1)
+               if self._timeSinceLastMob>self._waveReleaseFrequency*self._mobReleaseFrequency:
+                    self._generateNewWave(8,2)
                     self._timeSinceLastMob=0
                else:
                     self._timeSinceLastMob = self._timeSinceLastMob + dt
