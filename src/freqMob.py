@@ -13,12 +13,18 @@ class mob(mobClass.mob):
                 size=1
         else:
             size=0.1
-        self._sizeControl=size                
+        self._sizeControl=size #this is used to reset any slowed towers           
+        self._setSizeValues()
+                
+        self._timeToSlow=0
+        self._beingSlowed=False
+    
+    def _setSizeValues(self):
+        self._size=(self._sizeControl,self._sizeControl)
+        self._health=100*self._sizeControl
+        self._soundValue=int(10*self._sizeControl) #range 1..10
+        self.speed=4*(1-self._sizeControl)
         
-        self._size=(size,size)
-        self._health=100*size
-        self._soundValue=int(10*size) #range 1..10
-        self.speed=4*(1-size)
             
     def scale(self,multiple):
         self._frequency=multiple
@@ -27,9 +33,27 @@ class mob(mobClass.mob):
         mobClass.mob.update(self,dt,newPath)
         self._colour =(255*self._frequency,0,255*self._frequency)                 
         
+        if self._beingSlowed:
+            if self._timeToSlow>0:
+                self._timeToSlow-=dt
+            else:
+                self._timeToSlow=0
+                self._beingSlowed=False
+                self._setSizeValues()
+            
+            
+        
     def damage(self,amount):
         mobClass.mob.damage(self,amount)
         frac=self._health/(100.0*self._sizeControl) #get a fraction of total life left
         self.scale(frac)
         
-
+    def slow(self,amount):
+        print self._sizeControl
+        print amount
+        localAmount = self._sizeControl-amount
+        if localAmount<0.1:
+            localAmount=0.1
+        self._soundValue=int(10*(self._sizeControl-amount)) #range 1..10
+        self.speed=4*(1-(self._sizeControl-amount))
+        

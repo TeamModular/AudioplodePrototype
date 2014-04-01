@@ -98,4 +98,33 @@ class Tower(Cell):
                     self.world.shots.append(Shot(self.x + 0.5, self.y + 0.5, (mobPos[0], mobPos[1]), self.shotDrawTime))
                     self.temperature = self.coolDownTime
                     return
-            
+
+class SlowTower(Tower):
+    def __init(self,x,y,world):
+        super(SlowTower,self).__init__(x,y, world, walkable=False)
+    
+        self._cost=15
+        
+        self.range=3.0
+        self.range2 = self.range*self.range
+        #damage per shot is being hijacked to be 'slow amount'
+        self.damage=0.2
+        
+        print self.damage
+        
+    def update(self,dt,mobs):
+        self.temperature=self.temperature-dt
+        
+        if self.temperature<=0:
+        #only actually check for mobs to shoot at if we can shoot
+            for mob in mobs:
+                mobPos = mob.getPos()
+                #if mobPos.distance_squared_to(self.posVector) < self.range2:
+                if linalg.norm(mobPos - self.posVector) < self.range:
+                    #mob in range
+                    #slow it down
+                    mob.slow(self.damage)
+                    self.world.shots.append(Shot(self.x + 0.5, self.y + 0.5, (mobPos[0], mobPos[1]), self.shotDrawTime))
+                    self.temperature = self.coolDownTime
+                    return
+        

@@ -16,7 +16,7 @@ import math
 import freqMob as mobclass
 import sound
 import random
-from Tower import Tower
+import Tower
 from pathfinding.algorithms import astar
 import operator
 
@@ -111,7 +111,7 @@ class Audiosplode():
         return a list of towers which are avaiable to be built
         for use just with the UI atm, might be more useful for controlling which twoers the player can use later
         '''
-        return [Tower]
+        return [Tower.Tower,Tower.SlowTower]
     
     def update(self,dt):
         '''
@@ -179,7 +179,7 @@ class Audiosplode():
                 return False
          
         if towerType is None: #default tower
-            towerToAdd = Tower(x,y,self)
+            towerToAdd = Tower.SlowTower(x,y,self)
         else:
             print "New towers are not implemented"
             quit()
