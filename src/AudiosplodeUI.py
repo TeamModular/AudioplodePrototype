@@ -226,7 +226,7 @@ class AudiosplodeUI:
                 x = int(math.floor((mousePosOnWorld[0]+self.pos[0])/self.cellSize))
                 y = int(math.floor((mousePosOnWorld[1]+self.pos[1])/self.cellSize))
                 #print str(mousePos[0])+","+str(mousePos[1])+" -> ("+str(x)+","+str(y)+")"
-                self.audiosplode.addTower(x,y,Tower.SlowTower)
+                self.audiosplode.addTower(x,y,Tower.Tower)
             
             #give the mouse click info to the other UI chunks that need it
             self.towerSelection.mouseOnChunk(mousePos)
