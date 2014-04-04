@@ -41,17 +41,18 @@ class Tower(Cell):
         #temperature is incremented by coolDownTime every time this tower fires.  It decreases at a rate of 1 a second
         self.temperature=0.0
         
+        self.colour=(0,0,255)
         #self.pos = Vector(x,y)
         
         # Time to keep drawing each shot on screen
         self.shotDrawTime = 0.1
         self.shotDrawList = []
-        
+            
     def draw(self, screen, x, y, size):        
-        self.drawStatic(screen, x, y, size, self.temperature)
+        self.drawStatic(screen, x, y, size, self.colour,self.temperature)
         
     @staticmethod
-    def drawStatic(screen,x,y,size, temperature=0.0):
+    def drawStatic(screen,x,y,size,colour, temperature=0.0):
         '''
         TODO review if htis is the best way of doing this
         
@@ -61,7 +62,7 @@ class Tower(Cell):
         '''
         # We want a blue rectangle of width and height size, with an inner rectangle
         # indicating the temperature of the tower
-        pygame.draw.rect(screen, (0,0,255), pygame.Rect(x,y,size,size), 0)
+        pygame.draw.rect(screen, colour, pygame.Rect(x,y,size,size), 0)
         
         # Calculate inner rectangle size. We want it to be maximum size tempRectMaxSize
         # when temperature is => 3 and 0 when temperature is zero.
@@ -111,6 +112,7 @@ class SlowTower(Tower):
         #damage per shot is being hijacked to be 'slow amount'
         self.damage=0.5
      
+        self.colour=(0,128,128)
         
     def update(self,dt,mobs):
         self.temperature=self.temperature-dt

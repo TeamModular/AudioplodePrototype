@@ -94,7 +94,7 @@ class AudiosplodeUI:
         
         self.miniMap = Viewport(miniMapWidth-navPadding*2,navBarHeight-navPadding*2,Vector([width-miniMapWidth+navPadding,height-navBarHeight+navPadding]),self.audiosplode, 3, Vector([0,0]))
         
-        self.towerSelection = TowerSelection(width - miniMapWidth-navPadding-blurbWidth, navBarHeight-navPadding*2, audiosplode, Vector([blurbWidth+navPadding,height-navBarHeight+navPadding]))
+        self.towerSelection = TowerSelection(width - miniMapWidth-navPadding-blurbWidth, navBarHeight-navPadding*2, self, Vector([blurbWidth+navPadding,height-navBarHeight+navPadding]))
         
         self.blurb = Blurb(blurbWidth-navPadding, navBarHeight-navPadding*2, self, Vector([navPadding,height-navBarHeight+navPadding]))
         
@@ -258,7 +258,11 @@ class AudiosplodeUI:
                 x = int(math.floor((mousePosOnWorld[0]+self.pos[0])/self.cellSize))
                 y = int(math.floor((mousePosOnWorld[1]+self.pos[1])/self.cellSize))
                 #print str(mousePos[0])+","+str(mousePos[1])+" -> ("+str(x)+","+str(y)+")"
-                self.audiosplode.addTower(x,y,Tower.Tower)
+
+                #place currently selected tower:
+                for towerIcon in self.towerIcons:
+                    if towerIcon.selected:
+                        self.audiosplode.addTower(x,y,towerIcon.tower)
             
             #give the mouse click info to the other UI chunks that need it
             self.towerSelection.mouseOnChunk(mousePos)
@@ -347,6 +351,16 @@ class TowerSelection(UIChunk):
     
     def mouseClickedHere(self, mousePos):
         print ("mouse in tower seelction")
+        for icon in self.audiosplodeUI.towerIcons:
+            icon.selected=False
+        for icon in self.audiosplodeUI.towerIcons:    
+            offsetX = icon.rect.x-self.rect.x
+            offsetY = icon.rect.y-self.rect.y
+                                               
+            if (offsetX + icon.width) > mousePos[0] >=offsetX and (offsetY + icon.height) > mousePos[1] >=offsetY:
+                icon.mouseClickedHere(mousePos)    
+                break            
+
     
     def update(self):
         self.image.fill((200,200,200))
@@ -375,7 +389,12 @@ class TowerIcon(UIChunk):
         UIChunk.__init__(self,size,size,screenPos)
         self.audiosplodeUI=audiosplodeUI
         
-        self.tower=tower;
+        #this is a proper fudge, I need the tower colour
+        #but its a property of an object whereas I only
+        #have a function pointer, so instantiating
+        #a None object and grabbing the colour.
+        self.towerColour=tower(None,None,None).colour
+        self.tower=tower 
         self.margin=margin
         self.selected=selected
         
@@ -388,11 +407,11 @@ class TowerIcon(UIChunk):
             #outline with black
             pygame.draw.rect(self.image, (0,0,0), pygame.Rect(0,0,self.width,self.height), 0)
         
-        self.tower.drawStatic(self.image,self.margin,self.margin,self.width-self.margin*2)
+        self.tower.drawStatic(self.image,self.margin,self.margin,self.width-self.margin*2,self.towerColour)
         
     def mouseClickedHere(self, mousePos):
         self.selected=True
-        print("tower slected")
+        
 
 class StatusBar(UIChunk):
     '''
