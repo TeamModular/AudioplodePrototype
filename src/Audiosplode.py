@@ -177,9 +177,17 @@ class Audiosplode():
             mobX,mobY = mob.getCellPos()
             if x == mobX and y == mobY:
                 return False
-        
+
+        """
+        Use availableTowers as a list of 'function pointers'
+        to  a) check that the required type is available
+        and b) call the appropriate constructor
+        """
+        #TODO possibly remove this checking
+        #     by just selecting from available 
+        #     towers in the UI and passing that
+        #     object in directly.
         towersAvailable=self.availableTowers()
-        
         towerToAdd=None
         for towerIterator in towersAvailable:
             if towerIterator == towerType:
