@@ -100,17 +100,17 @@ class Tower(Cell):
                     return
 
 class SlowTower(Tower):
-    def __init(self,x,y,world):
-        super(SlowTower,self).__init__(x,y, world, walkable=False)
-    
+    def __init__(self,x,y,world):
+
+        Tower.__init__(self,x,y,world)
+   
         self._cost=15
         
         self.range=3.0
         self.range2 = self.range*self.range
         #damage per shot is being hijacked to be 'slow amount'
-        self.damage=0.2
-        
-        print self.damage
+        self.damage=0.5
+     
         
     def update(self,dt,mobs):
         self.temperature=self.temperature-dt

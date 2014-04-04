@@ -34,6 +34,7 @@ class mob(mobClass.mob):
         self._colour =(255*self._frequency,0,255*self._frequency)                 
         
         if self._beingSlowed:
+            self._colour=(self._colour[0],128,self._colour[2])
             if self._timeToSlow>0:
                 self._timeToSlow-=dt
             else:
@@ -49,11 +50,14 @@ class mob(mobClass.mob):
         self.scale(frac)
         
     def slow(self,amount):
-        print self._sizeControl
-        print amount
-        localAmount = self._sizeControl-amount
-        if localAmount<0.1:
-            localAmount=0.1
+                        
         self._soundValue=int(10*(self._sizeControl-amount)) #range 1..10
-        self.speed=4*(1-(self._sizeControl-amount))
+        self.speed=4*((1-self._sizeControl)-amount)
+        if self.speed<0.4: # 0.1*4
+            self.speed=0.4
+        if self._soundValue<1: #self._sizeControl-amount==0.1
+            self._soundValue=1
+        
+        self._beingSlowed=True
+        self._timeToSlow=3
         
