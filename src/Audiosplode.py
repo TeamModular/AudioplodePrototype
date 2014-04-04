@@ -177,12 +177,17 @@ class Audiosplode():
             mobX,mobY = mob.getCellPos()
             if x == mobX and y == mobY:
                 return False
-         
-        if towerType is None: #default tower
-            towerToAdd = Tower.SlowTower(x,y,self)
-        else:
-            print "New towers are not implemented"
-            quit()
+        
+        towersAvailable=self.availableTowers()
+        
+        towerToAdd=None
+        for towerIterator in towersAvailable:
+            if towerIterator == towerType:
+               towerToAdd = towerIterator(x,y,self)
+               break
+                 
+        if towerToAdd is None: #default tower
+            towerToAdd = Tower.Tower(x,y,self)
                 
         if self.getMoney() < towerToAdd.getCost():
             return False 
