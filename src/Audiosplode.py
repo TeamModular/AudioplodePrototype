@@ -18,8 +18,9 @@ import math
 import freqMob as mobclass
 import sound
 import random
-from Tower import Tower
+import Tower
 from pathfinding.algorithms import astar
+import operator
 
 
 class Audiosplode():
@@ -49,7 +50,7 @@ class Audiosplode():
         #how many mobs escaped
         self.escaped=0
         
-        self.money=0
+        self.money=50
         
         self.sound = sound.sound()
 
@@ -101,6 +102,10 @@ class Audiosplode():
     def getMoney(self):
         return self.money
     
+    def spendMoney(self,amount):
+        assert self.money>=amount
+        self.money -= amount
+    
     def getLives(self):
         #TODO life system
         return -self.escaped
@@ -110,7 +115,7 @@ class Audiosplode():
         return a list of towers which are avaiable to be built
         for use just with the UI atm, might be more useful for controlling which twoers the player can use later
         '''
-        return [Tower]
+        return [Tower.Tower,Tower.SlowTower]
     
     def update(self,dt):
         '''
@@ -122,7 +127,7 @@ class Audiosplode():
             if self.newTowers:
                 #a new tower has been placed, give the mobs new paths!!
                 mobX,mobY=mob.getCellPos()
-                mob.update(dt,self.getPath(self.cells[mobX][mobY], self.sink))
+                mob.update(dt,self.getPathToSink(self.cells[mobX][mobY]))
             else:
                 mob.update(dt)
         for mob in self.mobs[:]: # [:] creates a temporary copy
@@ -136,17 +141,28 @@ class Audiosplode():
                     self.mobs.remove(mob)
                 self.escaped = self.escaped + 1
         
-        #TODO spawning scheme that makes sense.  Batches?  constant streams?  batches of constant streams?
+        #mobs are spawned in waves and added to self.mobs              
         for spawn in self.spawns:
-            if random.random()>0.95:
-                mobType = random.random()
-                self.mobs.append( mobclass.mob( (spawn.x+0.5,spawn.y+0.5) ,self.getPath(spawn,self.sink), mobType )  )
+            spawn.update(dt,self.mobs)     
         
         # Update the shot draw list
         self.shots[:] = [shot for shot in self.shots if shot.drawTime > 0]
         for shot in self.shots:
             shot.drawTime -= dt
         
+        """
+        bit of a hack:
+            mobs now get added in spawner, so they need a path.
+            Can't do this from mobs as they don't have access
+            to the pathfinder, so doing it here.
+            But, don't want to update all mobs positions,
+            so adding a newpath from their location to the sink,
+            progressing their movement by 0.
+        """
+        for mob in self.mobs:
+            mobX,mobY=mob.getCellPos()
+            mob.update(0,self.getPathToSink(self.cells[mobX][mobY]))
+                
         for tower in self.towers:
             tower.update(dt,self.mobs)
         
@@ -158,15 +174,35 @@ class Audiosplode():
 #                 cell.update(dt,self.mobs)
     
     #also returns true or false for if successfully placed
-    def addTower(self,x,y):
+    def addTower(self,x,y,towerType=None):
         #TODO check that there is a path between every source and the sink before allowing the tower.
         
         for mob in self.mobs:
             mobX,mobY = mob.getCellPos()
             if x == mobX and y == mobY:
                 return False
-         
-         
+
+        """
+        Use availableTowers as a list of 'function pointers'
+        to  a) check that the required type is available
+        and b) call the appropriate constructor
+        """
+        #TODO possibly remove this checking
+        #     by just selecting from available 
+        #     towers in the UI and passing that
+        #     object in directly.
+        towersAvailable=self.availableTowers()
+        towerToAdd=None
+        for towerIterator in towersAvailable:
+            if towerIterator == towerType:
+               towerToAdd = towerIterator(x,y,self)
+               break
+                 
+        if towerToAdd is None: #default tower
+            towerToAdd = Tower.Tower(x,y,self)
+                
+        if self.getMoney() < towerToAdd.getCost():
+            return False 
                 
         #this is in the range of the board and also not ontop of a mob
         if x>=0 <self.width and y>=0 < self.height and self.cells[x][y].towerable():#
@@ -179,7 +215,7 @@ class Audiosplode():
             path=True
             
             for spawn in self.spawns:
-                if astar(spawn, self.sink) == None:
+                if self.getPathToSink(spawn) == None:
                     path=False
             
             
@@ -191,19 +227,27 @@ class Audiosplode():
                 return False
             
             
-            self.cells[x][y] = Tower(x,y, self)
+            self.cells[x][y] = towerToAdd
             
             self.newTowers=True
             self.towers.append(self.cells[x][y])
+            
+            self.spendMoney(towerToAdd.getCost())
+            
             return True
             
         return False
     
     #set the place th mobs want to go to
-    def setSink(self,x,y):
-        self.sink = Sink(x, y, self)
-        self.cells[x][y]=self.sink
+    def setSink(self,x,y,localWidth,localHeight):
+        self.sink = []
+        for j in range(localHeight):
+            for i in range(localWidth):
+                localSink = Sink(x+i,y+j, self) 
+                self.cells[x+i][y+j] = localSink
+                self.sink.append(localSink)
         
+                
     def addSpawn(self,x,y):
         '''
         Any number of spawns may be added, but at least one is required for a valid map
@@ -216,20 +260,40 @@ class Audiosplode():
     def getPath(self,fromCell,toCell):
         return  [node.pos for node in astar(fromCell, toCell)]
     
+    def getPathToSink(self,fromCell):
+        """
+        Added support for multiple sinks
+        """
+        distances={node: math.hypot(node.pos[0]-fromCell.pos[0],node.pos[1]-fromCell.pos[1]) for node in self.sink} 
+        
+        sorted_distances = sorted(distances.iteritems(), key=operator.itemgetter(1)) 
+                        
+        for i in xrange(len(self.sink)):
+            toCell=sorted_distances[0][0]
+            
+            nodes=astar(fromCell, toCell)
+            if nodes is not None:
+                path=[node.pos for node in nodes]
+                return path
+        
+        return None #no path to sink
+            
+    
 if __name__ == '__main__':
 
     a = Audiosplode()
+   
+    a.setSink(50,15,1,5)
+    
+    a.addSpawn(5,15)
+    a.addSpawn(5,19)
 
-#     a.cells[3][4]=BlockageCell(3,4, a)
-#     a.cells[4][4]=BlockageCell(4,4, a)
-#     a.cells[5][4]=BlockageCell(5,4, a)
-#     a.cells[6][4]=BlockageCell(6,4, a)
-#     a.cells[2][4]=BlockageCell(2,4, a)
-    
-    a.setSink(20,20)
-    
-    a.addSpawn(5,5)
-    a.addSpawn(50,5)
+    for spawn in a.spawns:
+        y=spawn.pos[1]
+        for i in xrange(0,50): #TODO change to world size
+            a.cells[i][y+1] = BlockageCell(i,y+1,a)
+            a.cells[i][y-1] = BlockageCell(i,y-1,a)
+
 
     ui = AudiosplodeUI(a,1024,768)
 
