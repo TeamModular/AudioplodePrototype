@@ -3,9 +3,11 @@ Created on 11 Jun 2013
 
 @author: Luke
 
-major TODO: namespaces/modules/whatever they are in python
+major TODO: namespaces/modules/whatever they are in python  -- they are called modules if they are a file or packages if they are a folder (PJE)
 
 '''
+
+import itertools
 
 #import pygame
 
@@ -19,6 +21,7 @@ import random
 from Tower import Tower
 from pathfinding.algorithms import astar
 
+
 class Audiosplode():
 
     def __init__(self, width=100, height=100):
@@ -26,10 +29,11 @@ class Audiosplode():
         Create an audiosplode world
         '''
 
-
         self.width=width
         self.height=height
 
+        # Efficent way of doing a flat list like this.
+        # self.cells = [EmptyCell(x, y, self) for x, y in itertools.product(range(height), range(width))]
         
         self.cells =  [ [EmptyCell(x,y, self) for y in range(height)] for x in range(width)  ]
         
