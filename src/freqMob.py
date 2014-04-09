@@ -9,8 +9,8 @@ class mob(mobClass.mob):
         self.speed
 
         if size>0.1:
-            if size>1:
-                size=1
+            if size>0.9:
+                size=0.9
         else:
             size=0.1
         self._sizeControl=size #this is used to reset any slowed towers           
