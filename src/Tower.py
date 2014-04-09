@@ -18,18 +18,26 @@ class Shot(object):
     def draw(self, screen, x, y, endX, endY):
         pygame.draw.line(screen, (255, 0, 0), (x, y), (endX, endY))
 
-class Tower(Cell):
+class Tower(object):
     '''
     base class for different types of tower
     '''
 
-
     def __init__(self,x,y, world):
-        super(Tower,self).__init__(x,y, world, walkable=False)
         '''
         Constructor
+        :param x: origin x
+        :param y: origin y
+        :param world:
         '''
-        
+
+        self.x=x
+        self.y=y
+
+        self.posVector=Vector([x,y])
+
+        self.world = world                              # for pathfinding
+
         self._cost=10
         
         self.range=6.0
@@ -47,7 +55,19 @@ class Tower(Cell):
         # Time to keep drawing each shot on screen
         self.shotDrawTime = 0.1
         self.shotDrawList = []
-            
+
+        # The shape of the tower. Set of coordiates relative to the origin point of this tower (self.x, self.y).
+        self.shape = [(0, 0)]
+
+    def worldShape(self):
+        """
+        Get the world shape of this object.
+        :returns list of cell positions for each cell this tower takes up
+        """
+        for shapexy in self.shape:
+            yield (self.x + shapexy[0], self.y + shapexy[1])
+
+
     def draw(self, screen, x, y, size):        
         self.drawStatic(screen, x, y, size, self.colour,self.temperature)
         
@@ -129,4 +149,3 @@ class SlowTower(Tower):
                     self.world.shots.append(Shot(self.x + 0.5, self.y + 0.5, (mobPos[0], mobPos[1]), self.shotDrawTime))
                     self.temperature = self.coolDownTime
                     return
-        

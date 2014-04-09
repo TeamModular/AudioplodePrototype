@@ -39,10 +39,10 @@ class Audiosplode():
         #this seems a little confusing, but I think it's overall less confusing than the alternative
         #Luke
         
-         
+
         #self.mobs = [mobclass.mob([5,6])]
         self.mobs=[]
-        
+
         #how many mobs escaped
         self.escaped=0
         
@@ -87,7 +87,10 @@ class Audiosplode():
         for col in self.cells[startX:endX]:
             for cell in col[startY:endY]:
                 #if cell.x<20 and cell.y<20:
-                cell.draw(screen,worldXToScreen(cell.x),worldYToScreen(cell.y),cellSize)
+                cell.draw(screen,worldXToScreen(cell.x),worldYToScreen(cell.y), cellSize)
+
+        for tower in self.towers:
+            tower.draw(screen, worldXToScreen(tower.x), worldYToScreen(tower.y), cellSize)
 
         for mob in self.mobs:
             mob.draw(screen,offsetX,offsetY,cellSize)
@@ -172,12 +175,6 @@ class Audiosplode():
     #also returns true or false for if successfully placed
     def addTower(self,x,y,towerType=None):
         #TODO check that there is a path between every source and the sink before allowing the tower.
-        
-        for mob in self.mobs:
-            mobX,mobY = mob.getCellPos()
-            if x == mobX and y == mobY:
-                return False
-
         """
         Use availableTowers as a list of 'function pointers'
         to  a) check that the required type is available
@@ -195,37 +192,50 @@ class Audiosplode():
                break
         if towerToAdd is None: #default tower
             towerToAdd = Tower.Tower(x,y,self)
-                
+
         if self.getMoney() < towerToAdd.getCost():
-            return False 
-                
+            return False
+
         #this is in the range of the board and also not ontop of a mob
-        if x>=0 <self.width and y>=0 < self.height and self.cells[x][y].towerable():#
+
+        # Checks to see if we can actually place down tower.
+        for shapex, shapey in towerToAdd.worldShape():
+
+            # Check to see if we are able to place down the tower on all the cells it covers.
+            if not self.cells[shapex][shapey].towerable():
+                return False
+
+            for mob in self.mobs:
+                mobX,mobY = mob.getCellPos()
+                if shapex == mobX and shapey == mobY:
+                    return False
+
+        if x>=0 <self.width and y>=0 < self.height:
             
             #test if there are still paths from the sources to the sink
             
             #make it not walkable for purposes of this test
-            self.cells[x][y].walkable=False
-            
+            #put cell back to normal
+            for shapexy in towerToAdd.worldShape():
+                self.cells[shapexy[0]][shapexy[1]].walkable = False
+
             path=True
             
             for spawn in self.spawns:
                 if self.getPathToSink(spawn) == None:
                     path=False
-            
-            
+
             #put cell back to normal
-            self.cells[x][y].walkable=True
+            for shapexy in towerToAdd.worldShape():
+                self.cells[shapexy[0]][shapexy[1]].walkable = True
             
             if not path:
                 #was no path for at least one of the spawns
                 return False
-            
-            
-            self.cells[x][y] = towerToAdd
+
             
             self.newTowers=True
-            self.towers.append(self.cells[x][y])
+            self.towers.append(towerToAdd)
             
             self.spendMoney(towerToAdd.getCost())
             
@@ -238,7 +248,7 @@ class Audiosplode():
         self.sink = []
         for j in range(localHeight):
             for i in range(localWidth):
-                localSink = Sink(x+i,y+j, self) 
+                localSink = Sink(x+i,y+j, self)
                 self.cells[x+i][y+j] = localSink
                 self.sink.append(localSink)
         
