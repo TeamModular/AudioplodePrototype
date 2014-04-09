@@ -49,10 +49,10 @@ class Tower(Cell):
         self.shotDrawList = []
             
     def draw(self, screen, x, y, size):        
-        self.drawStatic(screen, x, y, size, self.colour,self.temperature)
+        self.drawStatic(screen, x, y, size, self.colour,self.temperature,self.coolDownTime)
         
     @staticmethod
-    def drawStatic(screen,x,y,size,colour, temperature=0.0):
+    def drawStatic(screen,x,y,size,colour, temperature=0.0, coolDownTime = 3.0):
         '''
         TODO review if htis is the best way of doing this
         
@@ -67,7 +67,7 @@ class Tower(Cell):
         # Calculate inner rectangle size. We want it to be maximum size tempRectMaxSize
         # when temperature is => 3 and 0 when temperature is zero.
         tempRectMaxSize = size
-        tempRectSize = int(round(tempRectMaxSize * (temperature / 3.0)))
+        tempRectSize = int(round(tempRectMaxSize * (temperature / coolDownTime)))
         
         # Size must be odd
         if not tempRectSize % 2:
@@ -130,3 +130,42 @@ class SlowTower(Tower):
                     self.temperature = self.coolDownTime
                     return
         
+
+class SplashTower(Tower):
+    def __init__(self,x,y,world):
+        Tower.__init__(self,x,y,world)
+
+        self._cost=20
+
+        self.range=3.0
+        self.range2 = self.range*self.range
+        #range of splash damange
+        self.splashRange = 3
+        #damage to do to each mob within splash damage (no tailoff)
+        self.damage=40
+        self.coolDownTime=5.0
+
+        self.colour=(255,128,0)
+
+
+    def update(self,dt,mobs):
+        self.temperature=self.temperature-dt
+
+        if self.temperature<=0:
+        #only actually check for mobs to shoot at if we can shoot
+            for mob in mobs:
+                mobPos = mob.getPos()
+                #if mobPos.distance_squared_to(self.posVector) < self.range2:
+                if linalg.norm(mobPos - self.posVector) < self.range:
+                    #mob in range
+                    #find *all* mobs that are within splash damage of this targetted mob
+                    #then kasplodey them
+                    for mob2 in mobs:
+                        mob2Pos = mob2.getPos()
+                        if linalg.norm(mob2Pos - mobPos) < self.splashRange:
+                            #this mob is in range
+                            mob2.damage(self.damage)
+                    #mob.slow(self.damage)
+                    self.world.shots.append(Shot(self.x + 0.5, self.y + 0.5, (mobPos[0], mobPos[1]), self.shotDrawTime))
+                    self.temperature = self.coolDownTime
+                    return
