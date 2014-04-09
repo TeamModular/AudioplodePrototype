@@ -111,7 +111,7 @@ class Audiosplode():
         return a list of towers which are avaiable to be built
         for use just with the UI atm, might be more useful for controlling which twoers the player can use later
         '''
-        return [Tower.Tower,Tower.SlowTower]
+        return [Tower.Tower,Tower.SlowTower,Tower.SplashTower]
     
     def update(self,dt):
         '''
