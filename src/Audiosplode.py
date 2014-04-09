@@ -65,6 +65,9 @@ class Audiosplode():
         
         self.shots = []
         
+        self._gameTime =0
+        self._lastTimeMadeSound=0
+        self._timeInbetweenSounds=1
 
         #print(self.cells)
 
@@ -117,19 +120,31 @@ class Audiosplode():
         '''
         update game state for a period of dt seconds
         '''
+        
+        self._gameTime+=dt
+        
+        updateSoundTime=False
+        
         for mob in self.mobs:
             #mob.damage(5)
             #mob.move([1,0])
+            if mob.readyToBark():            
+                self.sound.play(mob.getSoundValue())
+                            
             if self.newTowers:
                 #a new tower has been placed, give the mobs new paths!!
                 mobX,mobY=mob.getCellPos()
                 mob.update(dt,self.getPathToSink(self.cells[mobX][mobY]))
             else:
                 mob.update(dt)
+        
+        if updateSoundTime:
+            self._lastTimeMadeSound=self._gameTime
+            updateSoundTime=False
+        
         for mob in self.mobs[:]: # [:] creates a temporary copy
             if mob.isDead():
                 self.mobs.remove(mob)
-                self.sound.play(mob.getSoundValue())
                 self.money=self.money + mob.getValue()
             if mob.hasEscaped():
                 if not mob.isDead():

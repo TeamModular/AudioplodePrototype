@@ -9,7 +9,7 @@ class mob:
         
         #position, (0,0) is the top left of cell[0][0], centre of cell[0][0] is (0.5,0.5)
         self._x = position[0]
-        self._y=position[1]
+        self._y = position[1]
         self._colour=(255,0,255)
         self._size=(0.4,0.4)
         self._health=100
@@ -23,12 +23,14 @@ class mob:
         #current cell is not the first element of the array
         self.currentCell=self.getCellPos()
         #path is rest of the array
-        self.path=self.path
+        
         #how much money does the player get for killing this
         #TODO random bonus for some mobs?
         self._value=1
         self._soundValue=2
 
+        self._distanceTravelled=0
+        self._barkTime=5
 
     def draw(self,screen,offsetX,offsetY,cellSize):
         
@@ -68,6 +70,13 @@ class mob:
     def getSoundValue(self):
         return self._soundValue
     
+    def readyToBark(self):
+        if self._distanceTravelled>self._barkTime:
+            self._distanceTravelled=0
+            return True
+        else:
+            return False
+    
     def updateSoundValue(self,newValue):
         self._soundValue=newValue
     
@@ -99,6 +108,7 @@ class mob:
         
         #update the position
         pos = pos + dir*self.speed*dt
+        self._distanceTravelled += self.speed*dt
         
         self._x,self._y = pos
 #         self._x+=dir[0]*self.speed*dt
