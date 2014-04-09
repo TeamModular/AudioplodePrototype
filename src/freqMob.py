@@ -24,8 +24,7 @@ class mob(mobClass.mob):
         self._health=100*self._sizeControl
         self._soundValue=int(10*self._sizeControl) #range 1..10
         self.speed=4*(1-self._sizeControl)
-        
-            
+                
     def scale(self,multiple):
         self._frequency=multiple
                         
@@ -51,12 +50,16 @@ class mob(mobClass.mob):
         
     def slow(self,amount):
                         
-        self._soundValue=int(10*(self._sizeControl-amount)) #range 1..10
+        assert amount>0                
+                        
+        self._soundValue=int(10*(self._sizeControl+amount)) #range 1..10
         self.speed=4*((1-self._sizeControl)-amount)
         if self.speed<0.4: # 0.1*4
             self.speed=0.4
         if self._soundValue<1: #self._sizeControl-amount==0.1
             self._soundValue=1
+        if self._soundValue>9:
+            self._soundValue=9
         
         self._beingSlowed=True
         self._timeToSlow=3
