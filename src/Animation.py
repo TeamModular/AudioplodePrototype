@@ -30,12 +30,12 @@ class Animation(object):
 class LaserAnimation(Animation):
 
     def __init__(self,startPos,endPos,lastsFor,colour=(255,0,0)):
-        super(Animation,self).__init__()
+        super(LaserAnimation,self).__init__()
         '''
         positions are in the form of (x,y)
         '''
         #TODO why on earth do I have to set this here? this should be done by the parent's constructor, no?
-        self.time=0
+        # self.time=0
 
         self.startPos=Vector(startPos)
         self.endPos=Vector(endPos)
