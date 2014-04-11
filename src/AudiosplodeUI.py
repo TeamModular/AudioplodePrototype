@@ -88,11 +88,11 @@ class AudiosplodeUI:
         miniMapWidth=blurbWidth
         navPadding = 2
         
-        self.mainView = Viewport(width, height-navBarHeight-statusBarHeight, Vector([0,statusBarHeight]), self.audiosplode, self.cellSize, self.pos)
+        self.mainView = Viewport(width, height-navBarHeight-statusBarHeight, Vector([0,statusBarHeight]), self.audiosplode, self.cellSize, self.pos, True)
         
         self.statusBar = StatusBar(width, statusBarHeight, self.audiosplode, Vector([0,0]))
         
-        self.miniMap = Viewport(miniMapWidth-navPadding*2,navBarHeight-navPadding*2,Vector([width-miniMapWidth+navPadding,height-navBarHeight+navPadding]),self.audiosplode, 3, Vector([0,0]))
+        self.miniMap = Viewport(miniMapWidth-navPadding*2,navBarHeight-navPadding*2,Vector([width-miniMapWidth+navPadding,height-navBarHeight+navPadding]),self.audiosplode, 3, Vector([0,0]),False)
         
         self.towerSelection = TowerSelection(width - miniMapWidth-navPadding-blurbWidth, navBarHeight-navPadding*2, self, Vector([blurbWidth+navPadding,height-navBarHeight+navPadding]))
         
@@ -441,9 +441,11 @@ class Viewport(UIChunk):
     A viewport of the game world
     using this as an intermediate step to rendering everything with pygame's sprite system.
         '''
-    def __init__(self,width,height,screenPos,audiosplode,cellSize,pos):
+    def __init__(self,width,height,screenPos,audiosplode,cellSize,pos,animations):
         UIChunk.__init__(self,width,height,screenPos)
-        
+
+        #will this viewport render animatinos?
+        self.animations=animations
         
         self.cellSize=cellSize
         
@@ -457,7 +459,7 @@ class Viewport(UIChunk):
         self.update()
         
     def update(self):
-        self.audiosplode.draw(self.image,self.cellSize,self.pos[0],self.pos[1])
+        self.audiosplode.draw(self.image,self.cellSize,self.pos[0],self.pos[1],self.animations)
         pass
     
     def setPos(self,pos):

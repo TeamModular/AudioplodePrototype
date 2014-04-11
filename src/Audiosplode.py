@@ -71,7 +71,7 @@ class Audiosplode():
 
         #print(self.cells)
 
-    def draw(self,screen,cellSize,offsetX,offsetY):
+    def draw(self,screen,cellSize,offsetX,offsetY,animations=False):
         '''
         Purely graphical, this should not affect game state.
         '''
@@ -97,8 +97,9 @@ class Audiosplode():
             
         # for shot in self.shots:
         #     shot.draw(screen, worldXToScreen(shot.x), worldYToScreen(shot.y), worldXToScreen(shot.endPos[0]), worldYToScreen(shot.endPos[1]))
-        for a in self.animations:
-            a.draw(screen,offsetX,offsetY,cellSize)
+        if animations:
+            for a in self.animations:
+                a.draw(screen,offsetX,offsetY,cellSize)
     
     def getMoney(self):
         return self.money
