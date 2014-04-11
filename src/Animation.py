@@ -49,5 +49,5 @@ class LaserAnimation(Animation):
         return self.time > self.lastsFor
 
     def draw(self,screen,offsetX,offsetY,cellSize):
-        offset = Vector(offsetX,offsetY)
-        pygame.draw.line(screen, self.colour, (self.startPos-offset)*cellSize, (self.endPos-offset)*cellSize)
+        offset = Vector([offsetX,offsetY])
+        pygame.draw.line(screen, self.colour, (self.startPos*cellSize-offset), (self.endPos*cellSize-offset))
