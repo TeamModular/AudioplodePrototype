@@ -7,6 +7,8 @@ Created on 12 Jun 2013
 from Cell import Cell
 import pygame
 from numpy import array as Vector, linalg
+from Animation import LaserAnimation
+
 
 class Shot(object):
     def __init__(self, x, y, endPos, drawTime):
@@ -96,9 +98,10 @@ class Tower(Cell):
                     #mob inn range!!
                     #damage it
                     mob.damage(self.damage)
-                    self.world.shots.append(Shot(self.x + 0.5, self.y + 0.5, (mobPos[0], mobPos[1]), self.shotDrawTime))
+                    #self.world.shots.append(Shot(self.x + 0.5, self.y + 0.5, (mobPos[0], mobPos[1]), self.shotDrawTime))
                     self.temperature = self.coolDownTime
-                    return
+                    return [LaserAnimation((self.x + 0.5, self.y + 0.5),mobPos,self.shotDrawTime)]
+        return []
 
 class SlowTower(Tower):
     def __init__(self,x,y,world):
@@ -126,9 +129,10 @@ class SlowTower(Tower):
                     #mob in range
                     #slow it down
                     mob.slow(self.damage)
-                    self.world.shots.append(Shot(self.x + 0.5, self.y + 0.5, (mobPos[0], mobPos[1]), self.shotDrawTime))
+                    #self.world.shots.append(Shot(self.x + 0.5, self.y + 0.5, (mobPos[0], mobPos[1]), self.shotDrawTime))
                     self.temperature = self.coolDownTime
-                    return
+                    return [LaserAnimation((self.x + 0.5, self.y + 0.5),mobPos,self.shotDrawTime)]
+        return []
         
 
 class SplashTower(Tower):
@@ -166,6 +170,7 @@ class SplashTower(Tower):
                             #this mob is in range
                             mob2.damage(self.damage)
                     #mob.slow(self.damage)
-                    self.world.shots.append(Shot(self.x + 0.5, self.y + 0.5, (mobPos[0], mobPos[1]), self.shotDrawTime))
+                    #self.world.shots.append(Shot(self.x + 0.5, self.y + 0.5, (mobPos[0], mobPos[1]), self.shotDrawTime))
                     self.temperature = self.coolDownTime
-                    return
+                    return [LaserAnimation((self.x + 0.5, self.y + 0.5),mobPos,self.shotDrawTime)]
+        return []

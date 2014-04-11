@@ -63,7 +63,10 @@ class Audiosplode():
         #towers seperate to cells because updating all the cells was insanely slow
         self.towers=[]
         
-        self.shots = []
+        #self.shots = []
+
+        #animations will be purely graphical, and not displayed on the minimap by default.  Hopefully support for different framerates for animations can come later
+        self.animations=[]
         
 
         #print(self.cells)
@@ -92,8 +95,10 @@ class Audiosplode():
         for mob in self.mobs:
             mob.draw(screen,offsetX,offsetY,cellSize)
             
-        for shot in self.shots:
-            shot.draw(screen, worldXToScreen(shot.x), worldYToScreen(shot.y), worldXToScreen(shot.endPos[0]), worldYToScreen(shot.endPos[1]))
+        # for shot in self.shots:
+        #     shot.draw(screen, worldXToScreen(shot.x), worldYToScreen(shot.y), worldXToScreen(shot.endPos[0]), worldYToScreen(shot.endPos[1]))
+        for a in self.animations:
+            a.draw(screen,offsetX,offsetY,cellSize)
     
     def getMoney(self):
         return self.money
@@ -142,9 +147,10 @@ class Audiosplode():
             spawn.update(dt,self.mobs)     
         
         # Update the shot draw list
-        self.shots[:] = [shot for shot in self.shots if shot.drawTime > 0]
-        for shot in self.shots:
-            shot.drawTime -= dt
+        #TODO replace with animations
+        # self.shots[:] = [shot for shot in self.shots if shot.drawTime > 0]
+        # for shot in self.shots:
+        #     shot.drawTime -= dt
         
         """
         bit of a hack:
@@ -160,8 +166,15 @@ class Audiosplode():
             mob.update(0,self.getPathToSink(self.cells[mobX][mobY]))
                 
         for tower in self.towers:
-            tower.update(dt,self.mobs)
-        
+            #update returns a list of animations
+            animations = tower.update(dt,self.mobs)
+            self.animations.extend(animations)
+
+        for a in self.animations:
+            finished = a.update(dt)
+            if finished:
+                self.animations.remove(a)
+
         self.newTowers=False
         
         
